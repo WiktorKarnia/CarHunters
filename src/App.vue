@@ -1,17 +1,38 @@
 <template>
-<navbar-component></navbar-component>
-<h1>Hello</h1>
-<page-main>
+    <navbar-component :isloggedin="isLoggedIn"></navbar-component>
+    <h1>Hello</h1>
+  
     <div class="ps-4 text-center">
-        <router-view></router-view>
+      <router-view></router-view>
     </div>
-</page-main>
-</template>
+  </template>
+  
+  <script setup>
+  import NavbarComponent from './components/NavbarComponent1.vue';
+  import { onMounted, ref } from 'vue';
+  import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
-<script setup>
-import NavbarComponent from './components/NavbarComponent.Vue'
+
+  const isLoggedIn = ref(false);
+  let auth;
+
+  onMounted(() => {
+    auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("logged")
+        isLoggedIn.value = true;
+      } else {
+        isLoggedIn.value = false;
+        console.log("not logged")
+      }
+    });
+  });
 </script>
+  
+  <style>
+  #app {
+    text-align: center;
 
-<style>
-
-</style>
+  }
+  </style>
