@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "dotenv": "^16.0.3",
     "firebase": "^9.20.0",
     "vue": "^3.2.47",
     "vue-pwa": "^0.0.1-security",
