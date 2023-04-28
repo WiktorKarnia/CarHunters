@@ -37,6 +37,14 @@ const router = createRouter({
     },
     },
     {
+      path: '/edit',
+      name: 'Edit',
+      component: () => import('../views/EditProfileView.vue'),
+      meta: {
+        requiresAuth: true,
+    },
+    },
+    {
       path: '/',
       name: 'Hello',
       component: () => import('../views/HelloView.vue')
@@ -74,10 +82,11 @@ const getCurrentUser = () => {
 
 router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-      if (await getCurrentUser) {
+      if (await getCurrentUser()) {
           next();
       } else {
           alert("You must be logged in!")
+          router.push('/')
       } 
   } else {
       next();
