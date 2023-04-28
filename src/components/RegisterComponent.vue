@@ -10,6 +10,12 @@
 
 <script setup>
 import { ref } from "vue";
+import { db } from "../main";
+import { 
+    doc, 
+    addDoc, 
+    collection 
+} from "firebase/firestore";
 import { 
     getAuth, 
     createUserWithEmailAndPassword,
@@ -23,6 +29,8 @@ const username = ref("")
 const password = ref("");
 const repeat_password = ref("");
 const router = useRouter();
+
+const collectionRef = collection(db, "accounts");
 
 const register = () => {
     if (password.value != repeat_password.value){
@@ -42,6 +50,18 @@ const register = () => {
                 console.log("Success")
                 console.log(getAuth().currentUser.displayName);
                 router.push('/posts');
+                const auth = getAuth();
+                const user = auth.currentUser;
+                addDoc(collectionRef,{
+                    UID: user.uid,
+                    description: '',
+                    })
+                    .then((docRef) => {
+                        console.log("New account added! With ID" + docRef.id );
+                    })
+                    .catch((error) => {
+                        console.log(error.message);
+                    });
             })
             .catch((error) => {
                 console.log(error);
