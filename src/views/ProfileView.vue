@@ -17,7 +17,7 @@
     import { getAuth } from 'firebase/auth'
     import { ref } from 'vue'
     import { collection, query, where, getDocs } from 'firebase/firestore'
-    import { db } from '../main'
+    import { db } from '../main.js'
   
     const auth = getAuth()
     const currentUser = auth.currentUser

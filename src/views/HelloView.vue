@@ -15,7 +15,7 @@
 
 <script setup>
 import { getAuth, signOut } from 'firebase/auth';
-import router from '../router/router'
+import router from '../router/router.js'
 
 const auth = getAuth();
 

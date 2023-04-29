@@ -18,7 +18,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { db } from "../main";
+import { db } from "../main.js";
 import { 
     doc, 
     addDoc, 
