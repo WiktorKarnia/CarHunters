@@ -33,7 +33,7 @@
     import { initializeApp } from "firebase/app";
     import { getFirestore, doc, setDoc} from 'firebase/firestore';
     import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
-    import firebaseConfig from "../firebaseConfig";
+    import firebaseConfig from "../firebaseConfig.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
