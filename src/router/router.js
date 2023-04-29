@@ -3,7 +3,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth"
 
 const router = createRouter({
   history: createWebHistory(),
-  base: '/CarHunters/',
   routes: [
     {
       path: '/home',
