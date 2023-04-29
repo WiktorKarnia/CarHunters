@@ -10,6 +10,6 @@ git init
 git add -A
 git commit -m $1
 #pushing changes on gh-pages branch 
-git push -f https://github.com/DziadoszWiktor/CarSpottingApp.git master:gh-pages
+git push -f https://github.com/WiktorKarnia/CarHunters.git master:gh-pages
 #returning to project directory
 cd ..   
