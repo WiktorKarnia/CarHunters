@@ -15,8 +15,6 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit:1500,
     rollupOptions: {
-      entryFileNames: '[name].js',
-      chunkFileNames: '[name].js',
         output:{
             manualChunks(id) {
               if (id.includes('node_modules')) {
