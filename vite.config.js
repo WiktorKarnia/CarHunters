@@ -15,4 +15,7 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit:1500,
   },
+  output: {
+    sanitizeFileName: (s) => s.replace(/\0/g, '-')
+  },
 })
