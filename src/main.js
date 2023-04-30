@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/router'
+import { createPinia } from 'pinia'
 
 import firebaseConfig from './firebaseConfig';
 import { initializeApp } from "firebase/app";
@@ -18,6 +19,7 @@ const vueApp = createApp(App);
 //const analytics = getAnalytics(app);
 
 vueApp.use(router)
+vueApp.use(createPinia())
 
 vueApp.mount('#app')
 

@@ -1,51 +1,41 @@
 <template>
-    <div>
-        <ul>
-        <li v-for="car in cars" :key="car.id">
-            <img :src="car.imageUrl" width="700" height="600">
-            <p>{{ car.make }}</p>
-            <p>{{ car.model }}</p>
-            <p>{{ car.engine }}</p>
-            <p>{{ car.color }}</p>
-        </li>
-        </ul>
+  <div>
+    <ul v-if="!carPosts._inProgress">
+      <li v-for="car in carPosts.getCars" :key="car.id">
+        <img :src="car.imageUrl" width="500" height="500">
+        <p>{{ car.make }}</p>
+        <p>{{ car.model }}</p>
+        <p>{{ car.engine }}</p>
+        <p>{{ car.color }}</p>
+      </li>
+    </ul>
+    <div v-else>
+      Loading cars...
     </div>
+  </div>
 </template>
 
 <script>
-    import { reactive } from 'vue';
-    import { initializeApp } from "firebase/app";
-    import { getFirestore, collection, getDocs } from 'firebase/firestore';
-    import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-    import firebaseConfig from "../firebaseConfig";
-  
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-  
-    export default {
-      setup() {
-        const cars = reactive([]);
-        getDocs(collection(db, "cars")).then((querySnapshot2) => {
-          querySnapshot2.forEach(async (doc) => {
-            const storage = getStorage();
-            const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
-            const imageUrl = await getDownloadURL(refImage);
-            cars.push({
-              id: doc.id,
-              make: doc.data().make,
-              model: doc.data().model,
-              engine: doc.data().engine,
-              color: doc.data().color,
-              imageUrl: imageUrl
-            });
-          });
-        });
-        return {
-          cars
-        };
-      }
-    }
+import { onMounted } from 'vue';
+import { useCarStore } from '../store/cars';
+export default {
+  setup() {
+    const carPosts = useCarStore()
+
+    carPosts.fetchCarsIfNeeded()
+
+    const onPostAdded = () => {
+      carPosts.fetchCarsIfNeeded();
+    };
+    onMounted(() => {
+      document.addEventListener('postAdded', onPostAdded);
+    })
+
+    return { carPosts }
+  }
+}
 </script>
+
 
 <style scoped>
 li {

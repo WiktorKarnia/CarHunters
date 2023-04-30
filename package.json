@@ -11,9 +11,11 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "firebase": "^9.20.0",
+    "pinia": "^2.0.35",
     "vue": "^3.2.47",
     "vue-pwa": "^0.0.1-security",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",

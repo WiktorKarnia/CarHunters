@@ -1,93 +1,98 @@
 <template>
     <div class="container px-5 mx-5">
-        <form id="form" @submit.prevent="submitForm">
-            <div class="form-group">
-                <label class="form-label">Marka</label>
-                <input type="text" class="form-control" v-model="car.make" placeholder="Wpisz markę samochodu">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Model</label>
-                <input type="text" class="form-control" v-model="car.model" placeholder="Wpisz model samochodu">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Silnik</label>
-                <input type="text" class="form-control" v-model="car.engine" placeholder="Wpisz rodzaj silnika">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Kolor</label>
-                <input type="text" class="form-control" v-model="car.color" placeholder="Wpisz kolor samochodu">
-            </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            <div class="form-group">
-                <label for="cameraFileInput" class="btn btn-primary">Wybierz zdjęcie</label>
-                <input @change="openCamera" style="display:none" id="cameraFileInput" type="file" accept="image/*" capture="environment">
-            </div>
-            <div class="form-group">
-                <img id="pictureFromCamera" class="img-fluid"/>
-            </div>
-        </form>
+      <form id="form" @submit.prevent="submitForm">
+        <div class="form-group">
+          <label class="form-label">Marka</label>
+          <input type="text" class="form-control" v-model="car.make" placeholder="Wpisz markę samochodu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Model</label>
+          <input type="text" class="form-control" v-model="car.model" placeholder="Wpisz model samochodu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Silnik</label>
+          <input type="text" class="form-control" v-model="car.engine" placeholder="Wpisz rodzaj silnika" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kolor</label>
+          <input type="text" class="form-control" v-model="car.color" placeholder="Wpisz kolor samochodu" required>
+        </div>
+        <div class="form-group">
+          <label for="cameraFileInput" class="btn btn-primary">Wybierz zdjęcie</label>
+          <input @change="openCamera" style="display:none" id="cameraFileInput" type="file" accept="image/*" capture="environment" required>
+        </div>
+        <div class="form-group">
+          <img id="pictureFromCamera" class="img-fluid"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
     </div>
-</template>
+  </template>
   
-<script>
-    import { initializeApp } from "firebase/app";
-    import { getFirestore, doc, setDoc} from 'firebase/firestore';
-    import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
-    import firebaseConfig from "../firebaseConfig";
+  <script>
+  import { initializeApp } from "firebase/app";
+  import { getFirestore, doc, setDoc } from 'firebase/firestore';
+  import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
+  import firebaseConfig from "../firebaseConfig";
+  import { useCarStore } from '../store/cars';
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    
-    export default {
-        data() {
-            return {
-                car: {
-                make: '',
-                model: '',
-                engine: '',
-                color: ''
-                }
-            };
-        },
-        methods: {
-        async submitForm() {
-            let id = (Math.random() + 1).toString(36).substring(7);
-            const storage = getStorage();
-            const refImg = ref(storage, "cars/" + id + ".jpg");
-            const selectedFile64 = document.getElementById('pictureFromCamera').src;
-
-            await uploadString(refImg, selectedFile64,'data_url');
-
-            await setDoc(doc(db, "cars", id), {
-                make: this.car.make,
-                model: this.car.model,
-                engine: this.car.engine,
-                color: this.car.color,
-                path: "cars/" + id + ".jpg"
-            });
-    
-            console.log("The photo has been sent in path cars/" + id);
-
-            this.car.make = '';
-            this.car.model = '';
-            this.car.engine = '';
-            this.car.color = '';
-            document.getElementById('pictureFromCamera').src = '';
-
-            },
-            openCamera(event) {
-                const file = event.target.files[0];
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const img = document.getElementById('pictureFromCamera');
-                        img.src = reader.result;
-                    }
-                reader.readAsDataURL(file);
-            }  
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  export default {
+    data() {
+      return {
+        car: {
+          make: '',
+          model: '',
+          engine: '',
+          color: ''
         }
+      };
+    },
+    methods: {
+      async submitForm() {
+        let id = (Math.random() + 1).toString(36).substring(7);
+        const storage = getStorage();
+        const refImg = ref(storage, "cars/" + id + ".jpg");
+        const selectedFile64 = document.getElementById('pictureFromCamera').src;
+  
+        await uploadString(refImg, selectedFile64, 'data_url');
+  
+        await setDoc(doc(db, "cars", id), {
+          make: this.car.make,
+          model: this.car.model,
+          engine: this.car.engine,
+          color: this.car.color,
+          path: "cars/" + id + ".jpg"
+        });
+  
+        console.log("The photo has been sent in path cars/" + id);
+        const event = new CustomEvent('postAdded');
+        document.dispatchEvent(event);
+  
+        this.car.make = '';
+        this.car.model = '';
+        this.car.engine = '';
+        this.car.color = '';
+        document.getElementById('pictureFromCamera').src = '';
+  
+        // Navigate to postsview
+        this.$router.push('/posts');
+      },
+      openCamera(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.getElementById('pictureFromCamera');
+          img.src = reader.result;
+        }
+        reader.readAsDataURL(file);
+      }  
     }
-</script>
+}
 
+</script>
 <style>
     .form-group {
       margin-bottom: 1rem;
