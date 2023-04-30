@@ -10,12 +10,10 @@ export default defineConfig({
   transpileDependencies: true,
   base: './',
   publicPath: process.env.NODE_ENV === 'production'
-      ? '/CarHunters/'
+      ? '/gh-pages-vue-deployment/'
       : '/',
   build: {
     chunkSizeWarningLimit:1500,
   },
-  output: {
-    sanitizeFileName: (s) => s.replace(/\0/g, '-')
-  },
+  mode: "hash",
 })
