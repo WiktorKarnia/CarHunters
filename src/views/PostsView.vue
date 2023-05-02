@@ -31,7 +31,7 @@
     import { reactive } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
-    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs } from 'firebase/firestore';
+    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy } from 'firebase/firestore';
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig";
     import { db } from '../main';
@@ -150,14 +150,14 @@
             });
           };
         
-          getDocs(collection(db, "cars"))
+          getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc')))
           .then(async (querySnapshot2) => {
             for (const doc of querySnapshot2.docs) {
               const storage = getStorage();
               const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
               const imageUrl = await getDownloadURL(refImage);
               
-              // Check whether the current user has already liked this post
+              // Check if liked
               const likesRef = collection(db, 'likes');
               const query = dbQuery(likesRef, where('uid', '==', uid), where('post_id', '==', doc.id));
               const existingLikes = await getDocs(query);
