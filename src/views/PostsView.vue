@@ -2,7 +2,7 @@
   <div>
       <ul>
       <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
-          <img :src="car.imageUrl" width="500" height="500"><br>
+          <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)"><br>
           <img :id="'heart'+car.id" :src="car.liked ? 'img/heart-filled.png' : 'img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
           <p style="float:left">{{ car.likes }}</p>
           <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
@@ -167,8 +167,8 @@
           });
         }
         const closeComments = (post_id) => {
+          comments.splice(0);
           console.log('closed comments')
-          comments.splice(0); // Clear the comments array
           document.getElementById('comments'+post_id).style.display = "none";
           document.getElementById('showComments'+post_id).style.display = "block";
         }
