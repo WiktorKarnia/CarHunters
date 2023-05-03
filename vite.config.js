@@ -14,6 +14,9 @@ export default defineConfig({
       : '/',
   build: {
     chunkSizeWarningLimit:1500,
+    rollupOptions: {
+      external: ["img/comment.png", "img/delete.png"]
+    }
   },
   mode: "hash",
 })

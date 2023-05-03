@@ -18,6 +18,7 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
+.vite
 .DS_Store
 *.suo
 *.ntvs*
@@ -25,3 +26,4 @@ dist-ssr
 *.sln
 *.sw?
 #/dist
+src/firebaseConfig.js
