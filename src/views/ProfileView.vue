@@ -11,9 +11,13 @@
     <button>
       <router-link to="/edit">Edit profile</router-link>
     </button>
+    <div>
+      <profile-posts-component></profile-posts-component>
+    </div>
   </template>
   
   <script setup>
+    import ProfilePostsComponent from '../components/ProfilePostsComponent.vue' 
     import { getAuth } from 'firebase/auth'
     import { ref } from 'vue'
     import { collection, query, where, getDocs } from 'firebase/firestore'

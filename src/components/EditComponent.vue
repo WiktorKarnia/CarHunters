@@ -2,8 +2,6 @@
     <div>
         <div v-if="!loading">
             <h1>Edit</h1>
-            <p>New username:</p>
-            <input type="text" v-model="username">
             <p>New Description: </p>
             <textarea cols="40" rows="5" v-model="description"></textarea>
             <br>
@@ -48,14 +46,6 @@ import router from '../router/router'
   const saveChanges = async () => {
     if (currentUser) {
       if (username.value && description.value) {
-        try {
-            loading.value = true;
-            await updateProfile(currentUser, { displayName: username.value })
-            console.log(currentUser)
-        } catch (error) {
-          console.error(error)
-        }
-    
         const q = query(
           collection(db, 'accounts'),
           where('UID', '==', currentUser.uid)
@@ -73,7 +63,7 @@ import router from '../router/router'
           console.error(error)
         }
       } else {
-        console.error('Username and description cannot be empty')
+        console.error('Description cannot be empty')
       }
     }
   }
