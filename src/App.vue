@@ -1,7 +1,5 @@
 <template>
     <navbar-component :isloggedin="isLoggedIn"></navbar-component>
-    <h1>Hello</h1>
-  
     <div class="ps-4 text-center">
       <router-view></router-view>
     </div>
