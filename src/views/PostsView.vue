@@ -15,14 +15,14 @@
           <p>{{ car.engine }}</p>
           <p>{{ car.color }}</p>
 
-          <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" v-model="comment" placeholder="Write a comment...">
-          <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, comment)" type="button">Comment</button><br>
+          <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" v-model="carComment[car.id]" placeholder="Write a comment...">
+          <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
   
           <div :id="'comments'+car.id" style="display:none;margin-top:20px">
             <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
-            <div class="my-4" v-for="(comment, index) in comments" :key="index" >
+            <div class="my-4" v-for="(comment, index) in comments" :key="index">
               <p>{{ comment.username }}: {{ comment.comment }}</p>
-            </div> 
+            </div>
           </div>
 
       </li>
@@ -43,7 +43,7 @@
     export default {
       setup() {
         const cars = reactive([]);
-        const comment = ref('');
+        const carComment = reactive({});
         const comments = reactive([]);
         const auth = getAuth()
         const uid = auth.currentUser.uid
@@ -120,8 +120,7 @@
           
         const commentPost = (post_id, commentContent) => {
           if (commentContent.trim() !== "") {
-            const user = auth.currentUser
-            //const uid = user.uid
+            const user = auth.currentUser;
             const username = user.displayName;
             const collectionRefComments = collection(db, "comments");
             const newComment = {
@@ -132,25 +131,24 @@
               createdAt: serverTimestamp()
             }
             addDoc(collectionRefComments, newComment)
-            .then(async (docRef) => {
-              console.log(commentContent)
-              console.log('Post Commented! Added with id: ' + docRef.id)
-              document.getElementById('comment'+post_id).value = ''
-              
-              const car = cars.find((car) => car.id === post_id)
-              car.comments = await countComments(post_id);
-              fetchComments(post_id);
-            })
-
-            .catch((error) => {
-              console.log(error.message);
-            });
+              .then(async (docRef) => {
+                console.log(commentContent)
+                console.log('Post Commented! Added with id: ' + docRef.id)
+                carComment[post_id] = '';
+                const car = cars.find((car) => car.id === post_id)
+                car.comments = await countComments(post_id);
+                fetchComments(post_id);
+              })
+              .catch((error) => {
+                console.log(error.message);
+              });
           } else {
             alert("Cannot post an empty comment!")
           }
         }
       
         const fetchComments = (post_id) => {
+          comments.splice(0);
           getDocs(dbQuery(collection(db, "comments"), orderBy('createdAt', 'desc')))
           .then(docs => {
             docs.forEach(doc => {
@@ -170,6 +168,7 @@
             }
           });
         }
+
         const closeComments = (post_id) => {
           comments.splice(0);
           console.log('closed comments')
@@ -222,7 +221,7 @@
           commentPost,
           closeComments,
           fetchComments,
-          comment,
+          carComment,
           comments
         };
       }   
