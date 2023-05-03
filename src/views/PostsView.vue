@@ -6,6 +6,7 @@
           <img :id="'heart'+car.id" :src="car.liked ? 'img/heart-filled.png' : 'img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
           <p style="float:left">{{ car.likes }}</p>
           <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
+          <p style="float:left">{{ car.comments }}</p>
           <br><br>
 
           <p>{{ car.username }}</p>
@@ -131,10 +132,14 @@
               createdAt: serverTimestamp()
             }
             addDoc(collectionRefComments, newComment)
-            .then((docRef) => {
+            .then(async (docRef) => {
               console.log(commentContent)
               console.log('Post Commented! Added with id: ' + docRef.id)
               document.getElementById('comment'+post_id).value = ''
+              
+              const car = cars.find((car) => car.id === post_id)
+              car.comments = await countComments(post_id);
+
             })
 
             .catch((error) => {
@@ -161,7 +166,6 @@
             if(comments.length == 0){
               alert("No comments yet!")
             }else{
-              document.getElementById('showComments'+post_id).style.display = "none"
               document.getElementById('comments'+post_id).style.display = "block"
             }
           });
@@ -173,6 +177,11 @@
           document.getElementById('showComments'+post_id).style.display = "block";
         }
 
+        const countComments = async (post_id) => {
+          const querySnapshot2 = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', post_id)))
+          return querySnapshot2.docs.length;
+        }
+
         //Posts
       
         getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc')))
@@ -182,6 +191,7 @@
             const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
             const imageUrl = await getDownloadURL(refImage);
             const likesCount = await countLikes(doc.id);
+            const commentsCount = await countComments(doc.id);
             
             // Check if liked
             const likesRef = collection(db, 'likes');
@@ -192,6 +202,7 @@
             cars.push({
               id: doc.id,
               likes: likesCount,
+              comments: commentsCount,
               username: doc.data().username,
               make: doc.data().make,
               model: doc.data().model,

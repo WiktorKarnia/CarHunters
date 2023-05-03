@@ -5,6 +5,8 @@
             <img :src="car.imageUrl" width="500" height="500"><br>
             <img :id="'heart'+car.id" :src="'img/heart-filled.png'" alt="Heart button" width="30" height="30" style="float:left">
             <p style="float:left">{{ car.likes }}</p>
+            <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
+            <p style="float:left">{{ car.comments }}</p>
             <br><br>
 
             <p>{{ car.username }}</p>
@@ -15,8 +17,7 @@
   
             <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" v-model="comment" placeholder="Write a comment...">
             <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, comment)" type="button">Comment</button><br>
-            <a :id="'showComments'+car.id" @click="fetchComments(car.id)">Show comments</a>
-    
+            
             <div :id="'comments'+car.id" style="display:none;margin-top:20px">
               <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
               <div class="my-4" v-for="(comment, index) in comments" :key="index" >
@@ -65,23 +66,27 @@
               if(comments.length == 0){
                 alert("No comments yet!")
               }else{
-                document.getElementById('showComments'+post_id).style.display = "none"
+
                 document.getElementById('comments'+post_id).style.display = "block"
               }
             });
         }
 
         const closeComments = (post_id) => {
-        comments.splice(0); // Clear the comments array
-        document.getElementById('comments'+post_id).style.display = "none";
-        document.getElementById('showComments'+post_id).style.display = "block";
-        }
+            comments.splice(0); // Clear the comments array
+            document.getElementById('comments'+post_id).style.display = "none";
+            document.getElementById('showComments'+post_id).style.display = "block";
+            }
 
-        const countLikes = async (post_id) => {
-            const querySnapshot2 = await getDocs(dbQuery(collection(db, 'likes'), where('post_id', '==', post_id)))
+            const countLikes = async (post_id) => {
+                const querySnapshot2 = await getDocs(dbQuery(collection(db, 'likes'), where('post_id', '==', post_id)))
+                return querySnapshot2.docs.length;
+            }
+
+            const countComments = async (post_id) => {
+            const querySnapshot2 = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', post_id)))
             return querySnapshot2.docs.length;
-        }
-
+            }
 
 
         getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc'), where('uid', '==', uid)))
@@ -91,6 +96,7 @@
                 const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
                 const imageUrl = await getDownloadURL(refImage)
                 const likesCount = await countLikes(doc.id);
+                const commentsCount = await countComments(doc.id);
 
                 cars.push({
                   id: doc.id,
@@ -100,7 +106,8 @@
                   engine: doc.data().engine,
                   color: doc.data().color,
                   imageUrl: imageUrl,
-                  likes: likesCount
+                  likes: likesCount,
+                  comments: commentsCount
                 });
             }
         });
