@@ -1,10 +1,11 @@
 <template>
   <div>
       <ul>
-      <li v-for="car in cars" :key="car.id">
+      <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
           <img :src="car.imageUrl" width="500" height="500"><br>
           <img :id="'heart'+car.id" :src="car.liked ? 'img/heart-filled.png' : 'img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
           <p style="float:left">{{ car.likes }}</p>
+          <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
           <br><br>
 
           <p>{{ car.username }}</p>
@@ -15,7 +16,6 @@
 
           <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" v-model="comment" placeholder="Write a comment...">
           <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, comment)" type="button">Comment</button><br>
-          <a :id="'showComments'+car.id" @click="fetchComments(car.id)">Show comments</a>
   
           <div :id="'comments'+car.id" style="display:none;margin-top:20px">
             <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
@@ -167,6 +167,7 @@
           });
         }
         const closeComments = (post_id) => {
+          console.log('closed comments')
           comments.splice(0); // Clear the comments array
           document.getElementById('comments'+post_id).style.display = "none";
           document.getElementById('showComments'+post_id).style.display = "block";
