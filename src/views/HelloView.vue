@@ -7,9 +7,6 @@
         <button>
             <router-link to="/register">Register</router-link>
         </button>
-        <button @click="handleSignOut">
-            Logout
-        </button>
     </div>
 </template>
 
@@ -17,12 +14,12 @@
 import { getAuth, signOut } from 'firebase/auth';
 import router from '../router/router.js'
 
-const auth = getAuth();
+// const auth = getAuth();
 
-const handleSignOut = () => {
-  signOut(auth).then(() => {
-    console.log("Signed out")
-    router.push("/login")
-  })
-};
+// const handleSignOut = () => {
+//   signOut(auth).then(() => {
+//     console.log("Signed out")
+//     router.push("/login")
+//   })
+// };
 </script>

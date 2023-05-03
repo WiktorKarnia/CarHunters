@@ -31,7 +31,8 @@
   
 <script>
     import { initializeApp } from "firebase/app";
-    import { getFirestore, doc, setDoc} from 'firebase/firestore';
+    import { getAuth } from 'firebase/auth'
+    import { getFirestore, doc, setDoc , serverTimestamp} from 'firebase/firestore';
     import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig.js";
 
@@ -55,10 +56,17 @@
             const storage = getStorage();
             const refImg = ref(storage, "cars/" + id + ".jpg");
             const selectedFile64 = document.getElementById('pictureFromCamera').src;
+            const auth = getAuth();
+            const user = auth.currentUser;
+            const uid = user.uid;
+            const username = user.displayName;
 
             await uploadString(refImg, selectedFile64,'data_url');
 
             await setDoc(doc(db, "cars", id), {
+                uid: uid,
+                username: username,
+                createdAt: serverTimestamp(),
                 make: this.car.make,
                 model: this.car.model,
                 engine: this.car.engine,
@@ -68,6 +76,7 @@
     
             console.log("The photo has been sent in path cars/" + id);
 
+            this.car.username = '';
             this.car.make = '';
             this.car.model = '';
             this.car.engine = '';
