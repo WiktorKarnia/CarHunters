@@ -89,15 +89,20 @@ const getCurrentUser = () => {
 };
 
 router.beforeEach(async (to, from, next) => {
+  const user = await getCurrentUser();
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-      if (await getCurrentUser()) {
-          next();
-      } else {
-          alert("You must be logged in!")
-          router.push('/')
-      } 
-  } else {
+    if (user) {
       next();
+    } else {
+      alert("You must be logged in!")
+      router.push('/hello')
+    }
+  } else {
+    if (user) {
+      router.push('/home');
+    } else {
+      next();
+    }
   }
 });
 
