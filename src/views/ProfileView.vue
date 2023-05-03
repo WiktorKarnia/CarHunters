@@ -17,9 +17,13 @@
     <button class="btn btn-danger text-light" v-if="admin">
       <router-link class="text-light" to="/admin">Moderation mode</router-link>
     </button>
+    <div>
+      <profile-posts-component></profile-posts-component>
+    </div>
   </template>
   
   <script setup>
+    import ProfilePostsComponent from '../components/ProfilePostsComponent.vue' 
     import { getAuth } from 'firebase/auth'
     import { ref } from 'vue'
     import { collection, query, where, getDocs } from 'firebase/firestore'
