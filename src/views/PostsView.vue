@@ -139,7 +139,7 @@
               
               const car = cars.find((car) => car.id === post_id)
               car.comments = await countComments(post_id);
-
+              fetchComments(post_id);
             })
 
             .catch((error) => {

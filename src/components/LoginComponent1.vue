@@ -11,6 +11,9 @@
             <p>
                 <button @click="signInWithGoogle" :disabled="loading">{{ loading ? 'Loading...' : 'Sign in with Google' }}</button>
             </p>
+            <p>
+              <button @click="goBack" :disabled="loading">{{ loading ? 'Loading...' : 'Back' }}</button>
+          </p>
         </div>
         <div v-else>
             <p>Logging In...</p>
@@ -82,6 +85,9 @@
         loading.value = false;
       });
   };
+  const goBack = () => {
+    router.push('/hello')
+  }
   
   </script>
   

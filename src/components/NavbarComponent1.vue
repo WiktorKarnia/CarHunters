@@ -70,7 +70,7 @@ const auth = getAuth();
 const handleSignOut = () => {
   signOut(auth).then(() => {
     console.log("Signed out")
-    router.push("/")
+    router.push("/hello")
   })
 };
 </script> 

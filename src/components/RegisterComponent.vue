@@ -6,8 +6,9 @@
             <p><input type="text" placeholder="Username" v-model="username" /></p>
             <p><input type="password" placeholder="Password" v-model="password" /></p>
             <p><input type="password" placeholder="Repeat Password" v-model="repeat_password" /></p>
-            <p><button @click="register">Submit</button></p>
-            <p><button @click="signInWithGoogle">Sign in with Google</button></p>
+            <p><button @click="register" :disabled="loading">{{ loading ? 'Loading...' : 'Register' }}</button></p>
+            <p><button @click="signInWithGoogle" :disabled="loading">{{ loading ? 'Loading...' : 'SignIn with Google' }}</button></p>
+            <p><button @click="goBack" :disabled="loading">{{ loading ? 'Loading...' : 'Back' }}</button></p>
         </div>
         <div v-else>
             <p>Creating your account...</p>
@@ -112,6 +113,9 @@ const signInWithGoogle = () => {
          });
 
 };
+const goBack = () => {
+    router.push('/hello')
+  }
 
 </script>
 

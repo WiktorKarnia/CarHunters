@@ -53,7 +53,7 @@ const router = createRouter({
     },
     },
     {
-      path: '/',
+      path: '/hello',
       name: 'Hello',
       component: () => import('../views/HelloView.vue')
     },
