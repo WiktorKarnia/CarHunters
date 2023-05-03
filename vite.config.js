@@ -11,5 +11,9 @@ export default defineConfig({
   base: './',
   publicPath: process.env.NODE_ENV === 'production'
       ? '/gh-pages-vue-deployment/'
-      : '/'
+      : '/',
+  build: {
+    chunkSizeWarningLimit:1500,
+  },
+  mode: "hash",
 })

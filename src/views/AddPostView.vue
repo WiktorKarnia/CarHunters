@@ -34,7 +34,7 @@
     import { getAuth } from 'firebase/auth'
     import { getFirestore, doc, setDoc , serverTimestamp} from 'firebase/firestore';
     import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
-    import firebaseConfig from "../firebaseConfig";
+    import firebaseConfig from "../firebaseConfig.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);

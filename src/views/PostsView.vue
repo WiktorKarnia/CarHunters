@@ -36,7 +36,7 @@
     import { getAuth } from 'firebase/auth';
     import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp } from 'firebase/firestore';
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-    import firebaseConfig from "../firebaseConfig";
+    import firebaseConfig from "../firebaseConfig.js";
     import { db } from '../main'; 
   
     
