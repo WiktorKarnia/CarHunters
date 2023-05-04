@@ -7,16 +7,19 @@ export default defineConfig({
   server: {
     port: 3000
   },
-  transpileDependencies: true,
-  base: './',
+  //transpileDependencies: true,
+  //base: './',
+  /*
   publicPath: process.env.NODE_ENV === 'production'
       ? '/gh-pages-vue-deployment/'
-      : '/',
+      : '/',*/
   build: {
     chunkSizeWarningLimit:1500,
+    /*
     rollupOptions: {
       external: ["img/comment.png", "img/delete.png"]
-    }
+    }*/
   },
-  mode: "hash",
+  assetsDir: 'img'
+  //mode: "hash",
 })

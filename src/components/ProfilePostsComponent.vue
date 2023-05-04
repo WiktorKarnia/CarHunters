@@ -3,9 +3,9 @@
         <ul>
         <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
             <img :src="car.imageUrl" width="500" height="500"><br>
-            <img :id="'heart'+car.id" :src="'img/heart-filled.png'" alt="Heart button" width="30" height="30" style="float:left">
+            <img :id="'heart'+car.id" :src="'./img/heart-filled.png'" alt="Heart button" width="30" height="30" style="float:left">
             <p style="float:left">{{ car.likes }}</p>
-            <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
+            <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
             <p style="float:left">{{ car.comments }}</p>
             <br><br>
 
@@ -19,7 +19,7 @@
             <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
             
             <div :id="'comments'+car.id" style="display:none;margin-top:20px">
-              <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
+              <img src="/img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
               <div class="my-4" v-for="(comment, index) in comments" :key="index" >
                 <p>{{ comment.username }}: {{ comment.comment }}</p>
               </div> 
