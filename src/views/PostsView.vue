@@ -1,9 +1,10 @@
 <template>
   <div>
+    <!-- <div id="mapContainer" style="height: 500px; width: 500px;"></div> -->
       <ul>
-      <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
+      <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id), closeMap(car.id)">
           <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)"><br>
-          <img :id="'heart'+car.id" :src="car.liked ? 'img/heart-filled.png' : 'img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
+          <img :id="'heart'+car.id" :src="car.liked ? './img/heart-filled.png' : './img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
           <p style="float:left">{{ car.likes }}</p>
           <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
           <p style="float:left">{{ car.comments }}</p>
@@ -15,9 +16,15 @@
           <p>{{ car.engine }}</p>
           <p>{{ car.color }}</p>
 
+          <div>
+            <button @click="showMap(car.location, car.id)">Show Map</button>
+          </div>
+
+          <div :id="'mapContainer'+car.id" style="height: 0px; width: 100%; visibility: hidden;"></div>
+
           <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" v-model="carComment[car.id]" placeholder="Write a comment...">
           <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
-  
+
           <div :id="'comments'+car.id" style="display:none;margin-top:20px">
             <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
             <div class="my-4" v-for="(comment, index) in comments" :key="index">
@@ -31,13 +38,15 @@
 </template>
 
 <script>
-    import { reactive } from 'vue';
+    import { reactive, onMounted } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
     import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp } from 'firebase/firestore';
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig";
     import { db } from '../main'; 
+    import "leaflet/dist/leaflet.css";
+    import L from "leaflet";
   
     
     export default {
@@ -47,7 +56,39 @@
         const comments = reactive([]);
         const auth = getAuth()
         const uid = auth.currentUser.uid
+        let map = null;
         
+
+        const showMap = (location, post_id) => {
+          const lat = location.latitude;
+          const long = location.longitude;
+          console.log(lat, long);
+          console.log(post_id);
+
+          const mapDiv = document.getElementById('mapContainer'+post_id)
+          mapDiv.style.height = '500px';
+          mapDiv.style.visibility = 'visible';
+
+          map = L.map("mapContainer"+post_id).setView([lat, long], 17);
+          L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(map);
+          L.marker([lat, long]).addTo(map);
+          // document.getElementById('mapContainer'+post_id).style.display = 'block';
+
+        }
+
+        const closeMap = (post_id) => {
+          const mapDiv = document.getElementById('mapContainer'+post_id)
+          if (mapDiv.offsetParent !== null) {
+            if (map) {
+              map.remove();
+              map = null;
+            }
+            console.log('Map closed');
+            mapDiv.style.height = '0px';
+            mapDiv.style.visibility = 'hidden';
+          }
+        }
+
         //Likes
 
         const likePost = async (post_id) => {
@@ -170,10 +211,13 @@
         }
 
         const closeComments = (post_id) => {
-          comments.splice(0);
-          console.log('closed comments')
-          document.getElementById('comments'+post_id).style.display = "none";
-          document.getElementById('showComments'+post_id).style.display = "block";
+          const commentsDiv = document.getElementById('comments'+post_id);
+          if (commentsDiv.offsetParent !== null) {
+            comments.splice(0);
+            console.log('closed comments')
+            commentsDiv.style.display = "none";
+            document.getElementById('showComments'+post_id).style.display = "block";;
+          }
         }
 
         const countComments = async (post_id) => {
@@ -208,7 +252,8 @@
               engine: doc.data().engine,
               color: doc.data().color,
               imageUrl: imageUrl,
-              liked: likeExists // add a new "liked" property to the car object
+              location: doc.data().location,
+              liked: likeExists 
             });
           }
         });
@@ -222,7 +267,10 @@
           closeComments,
           fetchComments,
           carComment,
-          comments
+          comments,
+          closeMap,
+          showMap,
+          map
         };
       }   
     }
@@ -230,6 +278,11 @@
 
 
 <style scoped>
+.hide {
+  height: 0;
+  overflow: hidden;
+}
+
 li {
   display: inline-block;
   margin: 10px;
