@@ -8,8 +8,14 @@
     <div v-else>
       <p>No username found.</p>
     </div>
-    <button>
-      <router-link to="/edit">Edit profile</router-link>
+    <button class="btn btn-primary" v-if="!admin">
+      <router-link class="text-light" to="/edit">Edit profile</router-link>
+    </button>
+    <button class="btn btn-primary" v-if="!admin">
+      <router-link class="text-light" to="/deleted">Deleted Posts</router-link>
+    </button>
+    <button class="btn btn-danger text-light" v-if="admin">
+      <router-link class="text-light" to="/admin">Moderation mode</router-link>
     </button>
     <div>
       <profile-posts-component></profile-posts-component>
@@ -42,4 +48,5 @@
     if (currentUser) {
       getAccountInfo()
     }
-  </script>
+    const admin = (currentUser.uid === 'XECmcugKcdhxvEiruG1H7ARg9hu1') ? true : false;
+</script>

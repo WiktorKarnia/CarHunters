@@ -1,13 +1,8 @@
 <template>
   <div>
-      <div v-if="isLoading.value" class="d-flex justify-content-center my-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
-      <ul v-else>
+      <ul>
       <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
-          <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)" style="object-fit: cover;"><br>
+          <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)"><br>
           <img :id="'heart'+car.id" :src="car.liked ? 'img/heart-filled.png' : 'img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
           <p style="float:left">{{ car.likes }}</p>
           <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
@@ -29,6 +24,8 @@
               <p>{{ comment.username }}: {{ comment.comment }}</p>
             </div>
           </div>
+          
+          <button class="btn btn-danger" @click="deleteCar(car.id)">Delete</button>
 
       </li>
       </ul>
@@ -39,10 +36,11 @@
     import { reactive } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
-    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp } from 'firebase/firestore';
-    import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp, doc, getDoc, setDoc } from 'firebase/firestore';
+    import { getStorage, ref, getDownloadURL, deleteObject } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig.js";
-    import { db } from '../main';
+    import { db } from '../main'; 
+  
     
     export default {
       setup() {
@@ -51,9 +49,7 @@
         const comments = reactive([]);
         const auth = getAuth()
         const uid = auth.currentUser.uid
-        const isLoading = reactive({ value: true });
-        //const isLoading = reactive(true);
-        //let isLoading = { value: true };
+        
         //Likes
 
         const likePost = async (post_id) => {
@@ -214,11 +210,35 @@
               engine: doc.data().engine,
               color: doc.data().color,
               imageUrl: imageUrl,
-              liked: likeExists
+              liked: likeExists // add a new "liked" property to the car object
             });
           }
-          isLoading.value = false;
         });
+
+        //const otherDb = getFirestore(app);
+
+        const deleteCar = async (carId) => {
+          if (window.confirm("Are you sure you want to delete this car?")) {
+            const storage = getStorage();
+            const carRef = doc(db, "cars", carId);
+            const carSnapshot = await getDoc(carRef);
+            const carData = carSnapshot.data();
+
+            const clonedCarRef = doc(db, "deleted-cars", carId);
+            //await setDoc(clonedCarRef, {carData, reason: "admin decision"});
+            const reason = window.prompt("Enter reason for deleting car:");
+            carData.reason = reason;
+            await setDoc(clonedCarRef, carData);
+
+            //await deleteObject(ref(storage, `cars/${carId}.jpg`));
+            await deleteDoc(carRef);
+
+            const index = cars.findIndex(car => car.id === carId);
+            if (index !== -1) {
+              cars.splice(index, 1);
+            }
+          }
+        }
       
         return {
           cars,
@@ -230,7 +250,7 @@
           fetchComments,
           carComment,
           comments,
-          isLoading
+          deleteCar
         };
       }   
     }

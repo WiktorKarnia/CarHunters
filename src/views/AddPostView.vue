@@ -133,6 +133,14 @@
     }
     .img-fluid {
       max-width: 100%;
-      height: auto;
+      height: 500px;
+      width: 500px;
+      object-fit: cover;
+      /*height: auto;*/
+      /*
+        object-fit: cover;
+        width: 100%;
+        height: 0;
+        padding-bottom: 100%;*/
     }
 </style>
