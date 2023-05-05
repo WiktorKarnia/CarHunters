@@ -1,6 +1,11 @@
 <template>
   <div>
-      <ul>
+      <div v-if="isLoading.value" class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <ul v-else>
       <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
           <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)" style="object-fit: cover;"><br>
           <img :id="'heart'+car.id" :src="car.liked ? 'img/heart-filled.png' : 'img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
@@ -37,8 +42,7 @@
     import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp } from 'firebase/firestore';
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig.js";
-    import { db } from '../main'; 
-  
+    import { db } from '../main';
     
     export default {
       setup() {
@@ -47,7 +51,9 @@
         const comments = reactive([]);
         const auth = getAuth()
         const uid = auth.currentUser.uid
-        
+        const isLoading = reactive({ value: true });
+        //const isLoading = reactive(true);
+        //let isLoading = { value: true };
         //Likes
 
         const likePost = async (post_id) => {
@@ -208,9 +214,10 @@
               engine: doc.data().engine,
               color: doc.data().color,
               imageUrl: imageUrl,
-              liked: likeExists // add a new "liked" property to the car object
+              liked: likeExists
             });
           }
+          isLoading.value = false;
         });
       
         return {
@@ -222,7 +229,8 @@
           closeComments,
           fetchComments,
           carComment,
-          comments
+          comments,
+          isLoading
         };
       }   
     }

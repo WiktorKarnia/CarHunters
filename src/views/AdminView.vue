@@ -225,6 +225,9 @@
             const carData = carSnapshot.data();
 
             const clonedCarRef = doc(db, "deleted-cars", carId);
+            //await setDoc(clonedCarRef, {carData, reason: "admin decision"});
+            const reason = window.prompt("Enter reason for deleting car:");
+            carData.reason = reason;
             await setDoc(clonedCarRef, carData);
 
             //await deleteObject(ref(storage, `cars/${carId}.jpg`));

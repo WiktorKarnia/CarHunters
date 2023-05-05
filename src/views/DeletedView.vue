@@ -10,6 +10,9 @@
             <p>{{ car.engine }}</p>
             <p>{{ car.color }}</p>
 
+            <p>---------</p>
+            <p style="color:red">{{ car.reason }}</p>
+
         </li>
         </ul>
     </div>
@@ -49,6 +52,7 @@
                   model: doc.data().model,
                   engine: doc.data().engine,
                   color: doc.data().color,
+                  reason: doc.data().reason,
                   imageUrl: imageUrl,
                 });
             }
