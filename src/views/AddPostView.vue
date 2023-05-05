@@ -45,8 +45,11 @@
     import { getAuth } from 'firebase/auth'
     import { getFirestore, doc, setDoc , serverTimestamp, GeoPoint} from 'firebase/firestore';
     import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
-    import firebaseConfig from "../firebaseConfig";
+    import firebaseConfig from "../firebaseConfig.js";
     import router from "../router/router";
+
+    
+
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -248,6 +251,14 @@
     }
     .img-fluid {
       max-width: 100%;
-      height: auto;
+      height: 500px;
+      width: 500px;
+      object-fit: cover;
+      /*height: auto;*/
+      /*
+        object-fit: cover;
+        width: 100%;
+        height: 0;
+        padding-bottom: 100%;*/
     }
 </style>

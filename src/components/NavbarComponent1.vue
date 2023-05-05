@@ -57,9 +57,9 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+//import { defineProps } from 'vue';
 import { getAuth, signOut } from 'firebase/auth';
-import router from '../router/router';
+import router from '../router/router.js';
 
 const props = defineProps({
   isloggedin: Boolean,
