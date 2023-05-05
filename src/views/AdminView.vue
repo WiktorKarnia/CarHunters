@@ -21,6 +21,7 @@
           <div :id="'comments'+car.id" style="display:none;margin-top:20px">
             <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
             <div class="my-4" v-for="(comment, index) in comments" :key="index">
+              <img src="/img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
               <p>{{ comment.username }}: {{ comment.comment }}</p>
             </div>
           </div>
@@ -151,23 +152,27 @@
       
         const fetchComments = (post_id) => {
           comments.splice(0);
-          getDocs(dbQuery(collection(db, "comments"), orderBy('createdAt', 'desc')))
+          getDocs(dbQuery(collection(db, "comments"), where('post_id', '==', post_id), orderBy('createdAt', 'desc')))
           .then(docs => {
             docs.forEach(doc => {
-              if (doc.data().post_id == post_id) {
-                const Comment = {
-                  id: doc.id,
-                  username: doc.data().username,
-                  comment: doc.data().comment,
-                }
-                comments.push(Comment)
+              const Comment = {
+                id: doc.id,
+                uid: doc.data().uid,
+                username: doc.data().username,
+                comment: doc.data().comment,
+                post_id: doc.data().post_id,
+                currentUID: uid,
               }
+              comments.push(Comment)
             })
             if(comments.length == 0){
               alert("No comments yet!")
             }else{
               document.getElementById('comments'+post_id).style.display = "block"
             }
+          })
+          .catch((error) => {
+            console.log(error.message);
           });
         }
 
@@ -181,6 +186,23 @@
         const countComments = async (post_id) => {
           const querySnapshot2 = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', post_id)))
           return querySnapshot2.docs.length;
+        }
+
+        const deleteComment = async (comment_id, post_id) => {
+          const commentRef = doc(db, 'comments', comment_id);
+          const getComment = await getDoc(commentRef);
+          const commentContent = getComment.data().comment;
+          const confirmationResult = confirm('Are you sure you want to delete this comment: ' + commentContent);
+          if (confirmationResult) {
+            await deleteDoc(commentRef);
+            const commentCount = await countComments(post_id);
+            await fetchComments(post_id);
+            const car = cars.find((car) => car.id === post_id);
+            car.comments = commentCount;
+            console.log("Deleted the comment with id: " + comment_id);
+          } else {
+            console.log("Canceled");
+          }
         }
 
         //Posts
@@ -248,6 +270,7 @@
           commentPost,
           closeComments,
           fetchComments,
+          deleteComment,
           carComment,
           comments,
           deleteCar
