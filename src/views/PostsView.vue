@@ -28,6 +28,7 @@
           <div :id="'comments'+car.id" style="display:none;margin-top:20px">
             <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
             <div class="my-4" v-for="(comment, index) in comments" :key="index">
+              <img v-if="comment.uid === comment.currentUID" src="img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
               <p>{{ comment.username }}: {{ comment.comment }}</p>
             </div>
           </div>
@@ -41,7 +42,7 @@
     import { reactive, onMounted } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
-    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp } from 'firebase/firestore';
+    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp, doc } from 'firebase/firestore';
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig";
     import { db } from '../main'; 
@@ -78,7 +79,7 @@
 
         const closeMap = (post_id) => {
           const mapDiv = document.getElementById('mapContainer'+post_id)
-          if (mapDiv.offsetParent !== null) {
+          if (mapDiv.offsetWidth > 0 && mapDiv.offsetHeight > 0) {
             if (map) {
               map.remove();
               map = null;
@@ -190,23 +191,27 @@
       
         const fetchComments = (post_id) => {
           comments.splice(0);
-          getDocs(dbQuery(collection(db, "comments"), orderBy('createdAt', 'desc')))
+          getDocs(dbQuery(collection(db, "comments"), where('post_id', '==', post_id), orderBy('createdAt', 'desc')))
           .then(docs => {
             docs.forEach(doc => {
-              if (doc.data().post_id == post_id) {
-                const Comment = {
-                  id: doc.id,
-                  username: doc.data().username,
-                  comment: doc.data().comment,
-                }
-                comments.push(Comment)
+              const Comment = {
+                id: doc.id,
+                uid: doc.data().uid,
+                username: doc.data().username,
+                comment: doc.data().comment,
+                post_id: doc.data().post_id,
+                currentUID: uid,
               }
+              comments.push(Comment)
             })
             if(comments.length == 0){
               alert("No comments yet!")
             }else{
               document.getElementById('comments'+post_id).style.display = "block"
             }
+          })
+          .catch((error) => {
+            console.log(error.message);
           });
         }
 
@@ -223,6 +228,15 @@
         const countComments = async (post_id) => {
           const querySnapshot2 = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', post_id)))
           return querySnapshot2.docs.length;
+        }
+
+        const deleteComment = async (comment_id, post_id) => {
+          await deleteDoc(doc(db, 'comments', comment_id));
+          const commentCount = await countComments(post_id);
+          await fetchComments(post_id);
+          const car = cars.find((car) => car.id === post_id);
+          car.comments = commentCount;
+          console.log("Deleted the comment with id: " + comment_id);
         }
 
         //Posts
@@ -266,6 +280,7 @@
           commentPost,
           closeComments,
           fetchComments,
+          deleteComment,
           carComment,
           comments,
           closeMap,

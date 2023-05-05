@@ -26,7 +26,7 @@
             </div>
             <div id="locationDiv" class="form-group" style="display: none">
                 <label class="form-label">Location</label>
-                <input type="text" class="form-control" v-model="car.location" placeholder="Wpisz gdzie zrobiłeś zdjęcie">
+                <input type="text" class="form-control" ref="origin" placeholder="Wpisz gdzie zrobiłeś zdjęcie">
             </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             <div class="form-group">
@@ -60,8 +60,20 @@
                 engine: '',
                 color: '',
                 },
-                isLocationChecked: false
+                isLocationChecked: false,
+                autocomplete: '',
+                latInput: '',
+                longInput: '',
             };
+        },
+        mounted() {
+            const autocomplete = new google.maps.places.Autocomplete(this.$refs["origin"]);
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                this.latInput = place.geometry.location.lat();
+                this.longInput = place.geometry.location.lng();
+                console.log("Selected location coordinates:", this.latInput, this.longInput);
+            });
         },
         methods: {
             async submitForm() {
@@ -81,11 +93,13 @@
                     const position = await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject);
                     });
-                    location = new GeoPoint(position.coords.latitude, position.coords.longitude);
+                    //location = new GeoPoint(position.coords.latitude, position.coords.longitude);
+                    location = new GeoPoint(position.coords.latitude+2, position.coords.longitude+2);
                 } else {
                     //location = new GeoPoint(this.car.location.latitude, this.car.location.longitude);
-                    location = new GeoPoint(0, 0);
+                    location = new GeoPoint(this.latInput, this.longInput);
                 }
+
 
                 await setDoc(doc(db, "cars", id), {
                     uid: uid,
