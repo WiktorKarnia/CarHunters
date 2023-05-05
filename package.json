@@ -11,6 +11,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "firebase": "^9.20.0",
+    "leaflet": "^1.9.3",
     "vue": "^3.2.47",
     "vue-pwa": "^0.0.1-security",
     "vue-router": "^4.1.6"

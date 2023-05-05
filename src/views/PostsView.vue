@@ -6,9 +6,10 @@
         </div>
       </div>
       <ul v-else>
-      <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
+      <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id), closeMap(car.id)">
           <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)" style="object-fit: cover;"><br>
-          <img :id="'heart'+car.id" :src="car.liked ? 'img/heart-filled.png' : 'img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
+          <img :id="'heart'+car.id" :src="car.liked ? './img/heart-filled.png' : './img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
+
           <p style="float:left">{{ car.likes }}</p>
           <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
           <p style="float:left">{{ car.comments }}</p>
@@ -20,12 +21,19 @@
           <p>{{ car.engine }}</p>
           <p>{{ car.color }}</p>
 
+          <div>
+            <button @click="showMap(car.location, car.id)">Show Map</button>
+          </div>
+
+          <div :id="'mapContainer'+car.id" style="height: 0px; width: 100%; visibility: hidden;"></div>
+
           <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" v-model="carComment[car.id]" placeholder="Write a comment...">
           <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
-  
+
           <div :id="'comments'+car.id" style="display:none;margin-top:20px">
             <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
             <div class="my-4" v-for="(comment, index) in comments" :key="index">
+              <img v-if="comment.uid === comment.currentUID" src="img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
               <p>{{ comment.username }}: {{ comment.comment }}</p>
             </div>
           </div>
@@ -36,13 +44,16 @@
 </template>
 
 <script>
-    import { reactive } from 'vue';
+    import { reactive, onMounted } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
-    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp } from 'firebase/firestore';
+    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp, doc } from 'firebase/firestore';
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-    import firebaseConfig from "../firebaseConfig.js";
-    import { db } from '../main';
+    import firebaseConfig from "../firebaseConfig";
+    import { db } from '../main'; 
+    import "leaflet/dist/leaflet.css";
+    import L from "leaflet";
+
     
     export default {
       setup() {
@@ -52,8 +63,38 @@
         const auth = getAuth()
         const uid = auth.currentUser.uid
         const isLoading = reactive({ value: true });
-        //const isLoading = reactive(true);
-        //let isLoading = { value: true };
+        let map = null;
+       
+        const showMap = (location, post_id) => {
+          const lat = location.latitude;
+          const long = location.longitude;
+          console.log(lat, long);
+          console.log(post_id);
+
+          const mapDiv = document.getElementById('mapContainer'+post_id)
+          mapDiv.style.height = '500px';
+          mapDiv.style.visibility = 'visible';
+
+          map = L.map("mapContainer"+post_id).setView([lat, long], 17);
+          L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(map);
+          L.marker([lat, long]).addTo(map);
+          // document.getElementById('mapContainer'+post_id).style.display = 'block';
+
+        }
+
+        const closeMap = (post_id) => {
+          const mapDiv = document.getElementById('mapContainer'+post_id)
+          if (mapDiv.offsetWidth > 0 && mapDiv.offsetHeight > 0) {
+            if (map) {
+              map.remove();
+              map = null;
+            }
+            console.log('Map closed');
+            mapDiv.style.height = '0px';
+            mapDiv.style.visibility = 'hidden';
+          }
+        }
+
         //Likes
 
         const likePost = async (post_id) => {
@@ -155,36 +196,52 @@
       
         const fetchComments = (post_id) => {
           comments.splice(0);
-          getDocs(dbQuery(collection(db, "comments"), orderBy('createdAt', 'desc')))
+          getDocs(dbQuery(collection(db, "comments"), where('post_id', '==', post_id), orderBy('createdAt', 'desc')))
           .then(docs => {
             docs.forEach(doc => {
-              if (doc.data().post_id == post_id) {
-                const Comment = {
-                  id: doc.id,
-                  username: doc.data().username,
-                  comment: doc.data().comment,
-                }
-                comments.push(Comment)
+              const Comment = {
+                id: doc.id,
+                uid: doc.data().uid,
+                username: doc.data().username,
+                comment: doc.data().comment,
+                post_id: doc.data().post_id,
+                currentUID: uid,
               }
+              comments.push(Comment)
             })
             if(comments.length == 0){
               alert("No comments yet!")
             }else{
               document.getElementById('comments'+post_id).style.display = "block"
             }
+          })
+          .catch((error) => {
+            console.log(error.message);
           });
         }
 
         const closeComments = (post_id) => {
-          comments.splice(0);
-          console.log('closed comments')
-          document.getElementById('comments'+post_id).style.display = "none";
-          document.getElementById('showComments'+post_id).style.display = "block";
+          const commentsDiv = document.getElementById('comments'+post_id);
+          if (commentsDiv.offsetParent !== null) {
+            comments.splice(0);
+            console.log('closed comments')
+            commentsDiv.style.display = "none";
+            document.getElementById('showComments'+post_id).style.display = "block";;
+          }
         }
 
         const countComments = async (post_id) => {
           const querySnapshot2 = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', post_id)))
           return querySnapshot2.docs.length;
+        }
+
+        const deleteComment = async (comment_id, post_id) => {
+          await deleteDoc(doc(db, 'comments', comment_id));
+          const commentCount = await countComments(post_id);
+          await fetchComments(post_id);
+          const car = cars.find((car) => car.id === post_id);
+          car.comments = commentCount;
+          console.log("Deleted the comment with id: " + comment_id);
         }
 
         //Posts
@@ -214,7 +271,9 @@
               engine: doc.data().engine,
               color: doc.data().color,
               imageUrl: imageUrl,
-              liked: likeExists
+              location: doc.data().location,
+              liked: likeExists 
+
             });
           }
           isLoading.value = false;
@@ -228,9 +287,13 @@
           commentPost,
           closeComments,
           fetchComments,
+          deleteComment,
           carComment,
           comments,
-          isLoading
+          isLoading,
+          closeMap,
+          showMap,
+          map
         };
       }   
     }
@@ -238,6 +301,11 @@
 
 
 <style scoped>
+.hide {
+  height: 0;
+  overflow: hidden;
+}
+
 li {
   display: inline-block;
   margin: 10px;
