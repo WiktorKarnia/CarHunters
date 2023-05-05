@@ -3,7 +3,7 @@
         <div v-if="!loading">
             <h1>Register</h1>
             <p><input type="text" placeholder="Email" v-model="email" /></p>
-            <p><input type="text" placeholder="Username" v-model="username" /></p>
+            <p><input type="text" placeholder="Username" maxlength="15" v-model="username" /></p>
             <p><input type="password" placeholder="Password" v-model="password" /></p>
             <p><input type="password" placeholder="Repeat Password" v-model="repeat_password" /></p>
             <p><button @click="register" :disabled="loading">{{ loading ? 'Loading...' : 'Register' }}</button></p>

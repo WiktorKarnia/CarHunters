@@ -58,15 +58,15 @@
         data() {
             return {
                 car: {
-                make: '',
-                model: '',
-                engine: '',
-                color: '',
+                    make: "",
+                    model: "",
+                    engine: "",
+                    color: "",
                 },
                 isLocationChecked: false,
-                autocomplete: '',
-                latInput: '',
-                longInput: '',
+                autocomplete: "",
+                latInput: "",
+                longInput: "",
             };
         },
         mounted() {
@@ -83,26 +83,25 @@
                 let id = (Math.random() + 1).toString(36).substring(7);
                 const storage = getStorage();
                 const refImg = ref(storage, "cars/" + id + ".jpg");
-                const selectedFile64 = document.getElementById('pictureFromCamera').src;
+                const selectedFile64 = document.getElementById("pictureFromCamera").src;
                 const auth = getAuth();
                 const user = auth.currentUser;
                 const uid = user.uid;
                 const username = user.displayName;
 
-                await uploadString(refImg, selectedFile64,'data_url');
+                await uploadString(refImg, selectedFile64, "data_url");
 
                 let location = null;
                 if (!this.isLocationChecked) {
                     const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject);
+                        navigator.geolocation.getCurrentPosition(resolve, reject);
                     });
                     //location = new GeoPoint(position.coords.latitude, position.coords.longitude);
-                    location = new GeoPoint(position.coords.latitude+2, position.coords.longitude+2);
+                    location = new GeoPoint(position.coords.latitude + 2, position.coords.longitude + 2);
                 } else {
                     //location = new GeoPoint(this.car.location.latitude, this.car.location.longitude);
                     location = new GeoPoint(this.latInput, this.longInput);
                 }
-
 
                 await setDoc(doc(db, "cars", id), {
                     uid: uid,
@@ -113,20 +112,19 @@
                     engine: this.car.engine,
                     color: this.car.color,
                     location: location,
-                    path: "cars/" + id + ".jpg"
+                    path: "cars/" + id + ".jpg",
                 });
 
                 console.log("The photo has been sent in path cars/" + id);
 
-                this.car.username = '';
-                this.car.make = '';
-                this.car.model = '';
-                this.car.engine = '';
-                this.car.color = '';
-                this.car.location = '';
-                document.getElementById('pictureFromCamera').src = '';
-
-                router.push('/posts')
+                this.car.username = "";
+                this.car.make = "";
+                this.car.model = "";
+                this.car.engine = "";
+                this.car.color = "";
+                this.car.location = "";
+                document.getElementById("pictureFromCamera").src = "";
+                router.push("/posts");
             },
             openCamera(event) {
                 const file = event.target.files[0];

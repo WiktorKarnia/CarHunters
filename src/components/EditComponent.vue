@@ -3,7 +3,7 @@
         <div v-if="!loading">
             <h1>Edit</h1>
             <p>New Description: </p>
-            <textarea cols="40" rows="5" v-model="description"></textarea>
+            <textarea cols="40" rows="5" maxlength="250" v-model="description"></textarea>
             <br>
             <button @click="saveChanges">Save changes</button>
         </div>

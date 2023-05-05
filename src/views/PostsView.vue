@@ -7,11 +7,16 @@
       </div>
       <ul v-else>
       <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id), closeMap(car.id)">
-          <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)" style="object-fit: cover;"><br>
+          <div :id="'imgContainer'+car.id" style="height: 500px; width: 100%; visibility: visible;">
+            <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)" style="object-fit: cover;"><br>
+          </div>
+
+          <div :id="'mapContainer'+car.id" style="height: 0px; width: 100%; visibility: hidden;"></div>
+
           <img :id="'heart'+car.id" :src="car.liked ? './img/heart-filled.png' : './img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
 
           <p style="float:left">{{ car.likes }}</p>
-          <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
+          <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
           <p style="float:left">{{ car.comments }}</p>
           <br><br>
 
@@ -25,15 +30,15 @@
             <button @click="showMap(car.location, car.id)">Show Map</button>
           </div>
 
-          <div :id="'mapContainer'+car.id" style="height: 0px; width: 100%; visibility: hidden;"></div>
+          
 
-          <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" v-model="carComment[car.id]" placeholder="Write a comment...">
+          <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="150" v-model="carComment[car.id]" placeholder="Write a comment...">
           <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
 
           <div :id="'comments'+car.id" style="display:none;margin-top:20px">
-            <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
+            <img src="/img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
             <div class="my-4" v-for="(comment, index) in comments" :key="index">
-              <img v-if="comment.uid === comment.currentUID" src="img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
+              <img v-if="comment.uid === comment.currentUID" src="/img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
               <p>{{ comment.username }}: {{ comment.comment }}</p>
             </div>
           </div>
@@ -64,6 +69,7 @@
         const uid = auth.currentUser.uid
         const isLoading = reactive({ value: true });
         let map = null;
+
        
         const showMap = (location, post_id) => {
           const lat = location.latitude;
@@ -72,8 +78,11 @@
           console.log(post_id);
 
           const mapDiv = document.getElementById('mapContainer'+post_id)
+          const imgDiv = document.getElementById('imgContainer'+post_id)
           mapDiv.style.height = '500px';
           mapDiv.style.visibility = 'visible';
+          imgDiv.style.visibility = 'hidden';
+          imgDiv.style.height = '0px';
 
           map = L.map("mapContainer"+post_id).setView([lat, long], 17);
           L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(map);
@@ -84,6 +93,7 @@
 
         const closeMap = (post_id) => {
           const mapDiv = document.getElementById('mapContainer'+post_id)
+          const imgDiv = document.getElementById('imgContainer'+post_id) 
           if (mapDiv.offsetWidth > 0 && mapDiv.offsetHeight > 0) {
             if (map) {
               map.remove();
@@ -92,6 +102,8 @@
             console.log('Map closed');
             mapDiv.style.height = '0px';
             mapDiv.style.visibility = 'hidden';
+            imgDiv.style.visibility = 'visible';
+            imgDiv.style.height = '500px';
           }
         }
 
@@ -236,12 +248,20 @@
         }
 
         const deleteComment = async (comment_id, post_id) => {
-          await deleteDoc(doc(db, 'comments', comment_id));
-          const commentCount = await countComments(post_id);
-          await fetchComments(post_id);
-          const car = cars.find((car) => car.id === post_id);
-          car.comments = commentCount;
-          console.log("Deleted the comment with id: " + comment_id);
+          const commentRef = doc(db, 'comments', comment_id);
+          const getComment = await getDoc(commentRef);
+          const commentContent = getComment.data().comment;
+          const confirmationResult = confirm('Are you sure you want to delete this comment: ' + commentContent);
+          if (confirmationResult) {
+            await deleteDoc(commentRef);
+            const commentCount = await countComments(post_id);
+            await fetchComments(post_id);
+            const car = cars.find((car) => car.id === post_id);
+            car.comments = commentCount;
+            console.log("Deleted the comment with id: " + comment_id);
+          } else {
+            console.log("Canceled");
+          }
         }
 
         //Posts
@@ -308,6 +328,7 @@
 
 li {
   display: inline-block;
+  vertical-align: top;
   margin: 10px;
   background-color: white;
   box-shadow: 0px 0px 5px #888;
