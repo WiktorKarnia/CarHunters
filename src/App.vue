@@ -1,15 +1,14 @@
 <template>
     <navbar-component :isloggedin="isLoggedIn"></navbar-component>
-    <div class="ps-4 text-center">
+    <div class="text-center">
       <router-view></router-view>
     </div>
-  </template>
+</template>
   
-  <script setup>
+<script setup>
   import NavbarComponent from './components/NavbarComponent1.vue';
   import { onMounted, ref } from 'vue';
   import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-
 
   const isLoggedIn = ref(false);
   let auth;
@@ -28,9 +27,8 @@
   });
 </script>
   
-  <style>
+<style>
   #app {
     text-align: center;
-
   }
-  </style>
+</style>

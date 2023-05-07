@@ -36,8 +36,6 @@
         const auth = getAuth()
         const uid = auth.currentUser.uid
 
-       
-
         getDocs(dbQuery(collection(db, 'deleted-cars'), orderBy('createdAt', 'desc'), where('uid', '==', uid)))
           .then(async (querySnapshot2) => {
             for (const doc of querySnapshot2.docs) {
