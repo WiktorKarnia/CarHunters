@@ -54,6 +54,7 @@
 
         </li>
         </ul>
+        <p v-if="!isLoading.value && cars.length === 0">0 resulsts</p>
     </div>
 </template>
   
@@ -272,9 +273,10 @@
             event.preventDefault(); // prevent form submission
             const formData = new FormData(event.target);
             const searchQuery = formData.get('searchQuery');
-            const searchArray = searchQuery.split(" ");
+            const searchArray = searchQuery.split(" ", 2);
             console.log(`You searched for "${searchQuery}"`);
 
+            console.log(searchArray);
             function capitalize(str) {
                 return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
             }
