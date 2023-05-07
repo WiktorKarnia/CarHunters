@@ -1,10 +1,10 @@
 <template>
     <h1>Welcome</h1>
-    <div>
-        <button>
+    <div >
+        <button type="button" class="btn btn-outline-primary" style="float:right">
             <router-link to="/login">Login</router-link>
         </button><br>
-        <button>
+        <button type="button" class="btn btn-outline-primary" style="float:left">
             <router-link to="/register">Register</router-link>
         </button>
     </div>
@@ -14,12 +14,8 @@
 import { getAuth, signOut } from 'firebase/auth';
 import router from '../router/router.js'
 
-// const auth = getAuth();
 
-// const handleSignOut = () => {
-//   signOut(auth).then(() => {
-//     console.log("Signed out")
-//     router.push("/login")
-//   })
-// };
 </script>
+<style scoped>
+
+</style>
