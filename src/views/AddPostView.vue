@@ -103,14 +103,18 @@
                     location = new GeoPoint(this.latInput, this.longInput);
                 }
 
+                function capitalize(str) {
+                    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+                }
+
                 await setDoc(doc(db, "cars", id), {
                     uid: uid,
                     username: username,
                     createdAt: serverTimestamp(),
-                    make: this.car.make,
-                    model: this.car.model,
-                    engine: this.car.engine,
-                    color: this.car.color,
+                    make: capitalize(this.car.make),
+                    model: capitalize(this.car.model),
+                    engine: capitalize(this.car.engine),
+                    color: capitalize(this.car.color),
                     location: location,
                     path: "cars/" + id + ".jpg",
                 });
@@ -259,4 +263,27 @@
         height: 0;
         padding-bottom: 100%;*/
     }
+    @media screen and (max-width: 300px) {
+  .bbbootstrap {
+    padding: 150px 0 0 0;
+  }
+
+  .bbbootstrap form {
+    width: 100%;
+  }
+
+  .bbbootstrap form input[type="text"] {
+    width: 100%;
+    padding-right: 80px;
+  }
+
+  .bbbootstrap form input[type="submit"] {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    float: right;
+    padding: 10px 25px;
+    width: auto;
+  }
+}
 </style>
