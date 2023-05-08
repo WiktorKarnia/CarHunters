@@ -30,26 +30,20 @@
   });
 </script>
   
+  <style soped>
+  body {
+    text-align: center;
+    background-color: #e2e2e2;
+  }
 
-<style>
-body {
-  text-align: center;
-  background-color: #f5f5f5;
-}
-
-header{
-  width: 100%;
-  position:fixed;
-  background-color: #f5f5f5;
-}
-#body {
-  padding-top: 14vh;
-  padding-bottom: 3vh;
-}
-#nav{
-  margin-top: 6vh;
-  width: 100%;
-  position:fixed;
+  header{
+    width: 100%;
+    position:fixed;
+    background-color: #e2e2e2;
+  }
+  #body {
+    padding-top: 14vh;
+    padding-bottom: 3vh;
   }
 
 </style>
