@@ -29,8 +29,9 @@
 </script>
   
   <style>
-  #app {
+  body {
     text-align: center;
+    background-color: #f5f5f5;
 
   }
   </style>

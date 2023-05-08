@@ -15,6 +15,10 @@
 
           <img :id="'heart'+car.id" :src="car.liked ? './img/heart-filled.png' : './img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
 
+          <div>
+            <button @click="showMap(car.location, car.id)" style="float:right">Show Map</button>
+          </div>
+
           <p style="float:left">{{ car.likes }}</p>
           <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
           <p style="float:left">{{ car.comments }}</p>
@@ -26,9 +30,7 @@
           <p>{{ car.engine }}</p>
           <p>{{ car.color }}</p>
 
-          <div>
-            <button @click="showMap(car.location, car.id)">Show Map</button>
-          </div>
+          
 
           
 
