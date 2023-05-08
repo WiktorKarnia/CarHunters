@@ -42,6 +42,22 @@ const router = createRouter({
       component: () => import('../views/LikedView.vue'),
       meta: {
         requiresAuth: true,
+    }
+    },
+    {
+      path: '/search',
+      name: 'Search',
+      component: () => import('../views/SearchView.vue'),
+      meta: {
+        requiresAuth: true,
+    },
+    },
+    {
+      path: '/add-post',
+      name: 'AddPost',
+      component: () => import('../views/AddPostView.vue'),
+      meta: {
+        requiresAuth: true,
     },
     },
     {

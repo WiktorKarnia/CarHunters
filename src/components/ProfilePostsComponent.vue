@@ -24,7 +24,7 @@
             <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" maxlength="150" type="button">Comment</button><br>
             
             <div :id="'comments'+car.id" style="display:none;margin-top:20px">
-              <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
+              <!-- <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right"> -->
               <div class="my-4" v-for="(comment, index) in comments" :key="index" >
                 <p>{{ comment.username }}: {{ comment.comment }}</p>
               </div> 

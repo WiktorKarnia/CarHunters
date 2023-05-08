@@ -35,6 +35,13 @@
       </ul>
       <ul class="navbar-nav ms-4 mb-2">
         <li class="nav-item">
+          <router-link class="nav-link active" aria-current="page" to="/search">
+            <img src="img/pin.png" width="35" height="35" alt="">
+          </router-link>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-4 mb-2">
+        <li class="nav-item">
           <button type="button" @click="handleSignOut" class="btn btn-outline-dark">
             <a>
               <img src="img/logout.png" width="35" height="35" alt="">
@@ -45,24 +52,22 @@
     </div>
   </div>
 </nav>
-
 </template>
 
 <script setup>
-//import { defineProps } from 'vue';
-import { getAuth, signOut } from 'firebase/auth';
-import router from '../router/router.js';
+  import { getAuth, signOut } from 'firebase/auth';
+  import router from '../router/router.js';
 
-const props = defineProps({
-  isloggedin: Boolean,
-});
+  const props = defineProps({
+    isloggedin: Boolean,
+  });
 
-const auth = getAuth();
+  const auth = getAuth();
 
-const handleSignOut = () => {
-  signOut(auth).then(() => {
-    console.log("Signed out")
-    router.push("/hello")
-  })
-};
+  const handleSignOut = () => {
+    signOut(auth).then(() => {
+      console.log("Signed out")
+      router.push("/hello")
+    })
+  };
 </script> 
