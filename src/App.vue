@@ -42,12 +42,13 @@
     background-color: #e2e2e2;
   }
   #body {
-    padding-top: 12vh;
-    padding-bottom: 7vh;
+    padding-top: 14vh;
+    padding-bottom: 3vh;
   }
   #nav{
     margin-top: 6vh;
     width: 100%;
     position:fixed;
    }
+
   </style>

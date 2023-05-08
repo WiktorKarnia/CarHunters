@@ -20,7 +20,7 @@
               <img :id="'showMap'+car.id" @click="showMap(car.location, car.id)" src='/img/pin.png' alt="Pin" width="30" height="30" style="float:right">
             </div>
             
-            <img :id="'heart'+car.id" :src="car.liked ? './img/heart-black.png' : './img/like.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
+            <img :id="'heart'+car.id" :src="car.liked ? './img/heart-black.png' : './img/like.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id, car.uid)" style="float:left">
             <p style="float:left">{{ car.likes }}</p>
             <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
             <p style="float:left">{{ car.comments }}</p>
@@ -113,11 +113,12 @@
 
         //Likes
 
-        const likePost = async (post_id) => {
+        const likePost = async (post_id, posters_uid) => {
           const collectionRefLikes = collection(db, "likes");
           const likedPost = {
             uid: uid,
-            post_id: post_id
+            post_id: post_id,
+            posters_uid: posters_uid
           };
           try {
             const docRef = await addDoc(collectionRefLikes, likedPost);
@@ -144,7 +145,7 @@
           });
           console.log('Post with id: '+post_id+' disliked');
 
-
+          cars.splice(cars.findIndex(car => car.id === post_id), 1);
           const car = cars.find(car => car.id === post_id);
           if (car) {
             car.liked = false;
@@ -152,7 +153,7 @@
           }
         };
 
-        const toggleLikePost = (post_id) => {
+        const toggleLikePost = (post_id, posters_uid) => {
           const collectionRefLikes = collection(db, "likes");
           const queryRef = dbQuery(collectionRefLikes, where("uid", "==", uid), where("post_id", "==", post_id));
           getDocs(queryRef).then((querySnapshot) => {
@@ -168,7 +169,7 @@
             });
             if (querySnapshot.size === 0) {
               console.log("Adding new like");
-              likePost(post_id);
+              likePost(post_id, posters_uid);
             }
           });
           
@@ -181,7 +182,6 @@
           }else{
             return querySnapshot2.docs.length;
           }
-          
         }
 
         //Comments
@@ -267,8 +267,11 @@
           const confirmationResult = confirm('Are you sure you want to delete this comment: ' + commentContent);
           if (confirmationResult) {
             await deleteDoc(commentRef);
+            comments.splice(cars.findIndex(comment => comment.id === comment_id), 1);
+            if (comments.length === 0) {
+                closeComments()
+            }
             const commentCount = await countComments(post_id);
-            await fetchComments(post_id);
             const car = cars.find((car) => car.id === post_id);
             car.comments = commentCount;
             console.log("Deleted the comment with id: " + comment_id);
@@ -278,41 +281,42 @@
         }
 
         //Posts
-      
-        getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc')))
-        .then(async (querySnapshot2) => {
-          for (const doc of querySnapshot2.docs) {
-            const storage = getStorage();
-            const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
-            const imageUrl = await getDownloadURL(refImage);
-            const likesCount = await countLikes(doc.id);
-            const commentsCount = await countComments(doc.id);
-            
-            // Check if liked
-            const likesRef = collection(db, 'likes');
-            const query = dbQuery(likesRef, where('uid', '==', uid), where('post_id', '==', doc.id));
-            const existingLikes = await getDocs(query);
-            const likeExists = existingLikes.docs.length > 0;
-            
-            cars.push({
-              id: doc.id,
-              likes: likesCount,
-              comments: commentsCount,
-              username: doc.data().username,
-              make: doc.data().make,
-              model: doc.data().model,
-              description: doc.data().description,
-              imageUrl: imageUrl,
-              location: doc.data().location,
-              liked: likeExists 
+        const fetchPosts = async () => {
+            isLoading.value = true;
+            const querySnapshot2 = await getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc')))
+            cars.length = 0;
+            for (const doc of querySnapshot2.docs) {
+                const storage = getStorage();
+                const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
+                const imageUrl = await getDownloadURL(refImage);
+                const likesCount = await countLikes(doc.id);
+                const commentsCount = await countComments(doc.id);
 
-            });
-          }
-          isLoading.value = false;
-        });
+                // Check if liked
+                const likesRef = collection(db, 'likes');
+                const query = dbQuery(likesRef, where('uid', '==', uid), where('post_id', '==', doc.id));
+                const existingLikes = await getDocs(query);
+                const likeExists = existingLikes.docs.length > 0;
+                cars.push({
+                    id: doc.id,
+                    likes: likesCount,
+                    comments: commentsCount,
+                    username: doc.data().username,
+                    make: doc.data().make,
+                    model: doc.data().model,
+                    description: doc.data().description,
+                    imageUrl: imageUrl,
+                    location: doc.data().location,
+                    liked: likeExists,
+                });
+            }
+            isLoading.value = false;
+          };
+          fetchPosts();
       
         return {
           cars,
+          fetchPosts,
           likePost,
           dislikePost,
           toggleLikePost,

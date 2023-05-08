@@ -122,13 +122,13 @@
           });
           console.log('Post with id: '+post_id+' disliked');
 
-
+          cars.splice(cars.findIndex(car => car.id === post_id), 1);
           const car = cars.find(car => car.id === post_id);
           if (car) {
             car.liked = false;
             car.likes = await countLikes(post_id);
           }
-          fetchPosts();
+          
         };
 
         const countLikes = async (post_id) => {
@@ -225,7 +225,11 @@
           if (confirmationResult) {
             await deleteDoc(commentRef);
             const commentCount = await countComments(post_id);
-            await fetchComments(post_id);
+            //await fetchComments(post_id);
+            comments.splice(cars.findIndex(comment => comment.id === comment_id), 1);
+            if (comments.length === 0) {
+                closeComments()
+            }
             const car = cars.find((car) => car.id === post_id);
             car.comments = commentCount;
             console.log("Deleted the comment with id: " + comment_id);
@@ -269,39 +273,8 @@
             isLoading.value = false;
             };
 
-            fetchPosts();
-        
-        // getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc')))
-        // .then(async (querySnapshot2) => {
-        //   for (const doc of querySnapshot2.docs) {
-        //     const storage = getStorage();
-        //     const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
-        //     const imageUrl = await getDownloadURL(refImage);
-        //     const likesCount = await countLikes(doc.id);
-        //     const commentsCount = await countComments(doc.id);
-            
-        //     // Check if liked
-        //     const likesRef = collection(db, 'likes');
-        //     const query = dbQuery(likesRef, where('uid', '==', uid), where('post_id', '==', doc.id));
-        //     const existingLikes = await getDocs(query);
-        //     const likeExists = existingLikes.docs.length > 0;
-        //     if(likeExists){
-        //         cars.push({
-        //         id: doc.id,
-        //         likes: likesCount,
-        //         comments: commentsCount,
-        //         username: doc.data().username,
-        //         make: doc.data().make,
-        //         model: doc.data().model,
-        //         description: doc.data().description,
-        //         imageUrl: imageUrl,
-        //         location: doc.data().location,
-        //         liked: likeExists 
-        //         });
-        //     }
-        //   }
-        //   isLoading.value = false;
-        // });
+        fetchPosts();
+
       
         return {
           cars,

@@ -1,3 +1,3 @@
 <template>
-    <header><h1>CarHunters</h1></header>
+    <header><img src="img/CarHunters2.png" alt="logo" style="width:300px; height:50px"></header>
 </template>
