@@ -6,7 +6,7 @@
         </div>
       </div>
       <ul v-else>
-      <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id), closeMap(car.id)">
+      <li v-for="car in displayedCars" :key="car.id" @mouseleave="closeComments(car.id), closeMap(car.id)">
           <div :id="'imgContainer'+car.id" style="height: 500px; width: 100%; visibility: visible;">
             <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)" style="object-fit: cover;"><br>
           </div>
@@ -49,10 +49,10 @@
 </template>
 
 <script>
-    import { reactive, onMounted } from 'vue';
+    import { reactive, watch } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
-    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp, doc } from 'firebase/firestore';
+    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp, doc, limit } from 'firebase/firestore';
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig";
     import { db } from '../main'; 
@@ -69,6 +69,9 @@
         const uid = auth.currentUser.uid
         const isLoading = reactive({ value: true });
         let map = null;
+        const displayedCars = reactive([]);
+        let page = 1;
+        let pageSize = 6;
 
        
         const showMap = (location, post_id) => {
@@ -266,7 +269,7 @@
 
         //Posts
       
-        getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc')))
+        getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc'), limit(6)))
         .then(async (querySnapshot2) => {
           for (const doc of querySnapshot2.docs) {
             const storage = getStorage();
@@ -298,9 +301,22 @@
           }
           isLoading.value = false;
         });
+
+        watch(cars, () => {
+              displayedCars.splice(0, displayedCars.length, ...cars.slice(0, pageSize * page));
+          });
+
+          window.addEventListener('scroll', () => {
+              if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                isLoading.value = true;
+                  page++;
+                  displayedCars.splice(0, displayedCars.length, ...cars.slice(0, pageSize * page));
+                  isLoading.value = false;
+              }
+          });
       
         return {
-          cars,
+          displayedCars,
           likePost,
           dislikePost,
           toggleLikePost,
