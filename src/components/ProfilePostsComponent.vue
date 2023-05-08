@@ -1,9 +1,14 @@
 <template>
     <div>
-        <ul>
+        <div v-if="isLoading.value" class="d-flex justify-content-center my-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <ul v-else>
         <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
             <img :src="car.imageUrl" width="500" height="500"><br>
-            <img :id="'heart'+car.id" :src="'img/heart-filled.png'" alt="Heart button" width="30" height="30" style="float:left">
+            <img :id="'heart'+car.id" :src="'img/heart-black.png'" alt="Heart button" width="30" height="30" style="float:left">
             <p style="float:left">{{ car.likes }}</p>
             <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
             <p style="float:left">{{ car.comments }}</p>
@@ -47,6 +52,7 @@
         const comments = reactive([]);
         const auth = getAuth()
         const uid = auth.currentUser.uid
+        const isLoading = reactive({ value: true });
 
         const commentPost = (post_id, commentContent) => {
           if (commentContent.trim() !== "") {
@@ -116,8 +122,10 @@
         }
 
 
+
         getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc'), where('uid', '==', uid)))
           .then(async (querySnapshot2) => {
+            isLoading.value = true;
             for (const doc of querySnapshot2.docs) {
                 const storage = getStorage();
                 const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
@@ -130,13 +138,13 @@
                   username: doc.data().username,
                   make: doc.data().make,
                   model: doc.data().model,
-                  engine: doc.data().engine,
-                  color: doc.data().color,
+                  description: doc.data().description,
                   imageUrl: imageUrl,
                   likes: likesCount,
                   comments: commentsCount
                 });
             }
+            isLoading.value = false;
         });
       
         return {
@@ -145,6 +153,7 @@
           closeComments,
           fetchComments,
           carComment,
+          isLoading,
           comments
         };
       }   

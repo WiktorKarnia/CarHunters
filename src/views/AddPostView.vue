@@ -1,22 +1,22 @@
 <template>
-    <div class="my-5 mx-5 py-5 px-5 border">
+    <div class="my-2 mx-5 py-2 px-5">
         <form id="form" @submit.prevent="submitForm">
             <div class="row">
                 <div class="col align-self-center">
     
                     <div class="form-group">
                         <label class="form-label">Make</label>
-                        <input type="text" class="form-control" v-model="car.make" placeholder="Wpisz markę samochodu">
+                        <input type="text" class="form-control" v-model="car.make" placeholder="Make of the spotted car">
                     </div>
     
                     <div class="form-group">
                         <label class="form-label">Model</label>
-                        <input type="text" class="form-control" v-model="car.model" placeholder="Wpisz model samochodu">
+                        <input type="text" class="form-control" v-model="car.model" placeholder="Model of the spotted car">
                     </div>
     
                     <div class="form-group">
                         <label class="form-label">Description</label>
-                        <input type="text" class="form-control" v-model="car.description" placeholder="Wpisz rodzaj silnika">
+                        <input type="text" class="form-control" v-model="car.description" placeholder="Description of your spot">
                     </div>
     
                     <div class="form-group">
@@ -29,7 +29,7 @@
     
                     <div id="locationDiv" class="form-group" style="display: none">
                         <label class="form-label">Location</label>
-                        <input type="text" class="form-control" ref="origin" placeholder="Wpisz gdzie zrobiłeś zdjęcie">
+                        <input type="text" class="form-control" ref="origin" placeholder="Where did you take the picture?">
                     </div>
                 </div>
     
@@ -39,14 +39,15 @@
                     </div>
     
                     <div class="form-group">
-                        <label for="cameraFileInput" class="btn btn-primary">Wybierz zdjęcie</label>
+                        <label for="cameraFileInput" class="btn btn-primary">Pick a photo</label>
                         <input @change="openCamera" style="display:none" id="cameraFileInput" type="file" accept="image/*" capture="environment">
                     </div>
                 </div>
-    
-    
+
                 <div class="row">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <div class="col align-self-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -185,7 +186,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .switch {
         position: relative;
         display: inline-block;

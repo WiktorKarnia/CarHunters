@@ -1,5 +1,5 @@
 <template>
-    <header-component class="border"></header-component>
+    <header-component></header-component>
     <navbar-component id="nav" :isloggedin="isLoggedIn"></navbar-component>
     <div id="body" class="text-center">
       <router-view></router-view>
@@ -43,12 +43,13 @@
     background-color: #f5f5f5;
   }
   #body {
-    padding-top: 12vh;
-    padding-bottom: 7vh;
+    padding-top: 14vh;
+    padding-bottom: 3vh;
   }
   #nav{
     margin-top: 6vh;
     width: 100%;
     position:fixed;
    }
+
   </style>
