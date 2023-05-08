@@ -1,5 +1,4 @@
 <template>
-    <h1>CarHunters</h1>
     <div id="welcome">
         <br>
         <br>
@@ -34,32 +33,23 @@
     font-weight: bolder;
 }
 
-.login-button {
-  border: none;
-  outline: none;
-  background-color: #4b1a83;
-  padding: 10px 20px;
-  font-size: 20px;
-  font-weight: 700;
-  border-radius: 5px;
-  transition: all ease 0.1s;
-  box-shadow: 0px 5px 0px 0px #631c92;
-  margin:150px;
-  opacity: 1;
-  margin-bottom: 300px;
-  width: 150px;
-  height: 60px;
-}
-.register-button {
-  border: none;
-  outline: none;
-  background-color: #4b1a83;
-  padding: 10px 20px;
-  font-size: 20px;
-  font-weight: 700;
-  border-radius: 5px;
-  transition: all ease 0.1s;
-  box-shadow: 0px 5px 0px 0px #631c92;
+.register-button, .login-button{
+  display: inline-block;
+  font-family: sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  margin: 1rem auto;
+  padding: 0.7rem 2rem;
+  border-style: none;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background-color: black;
+  box-shadow: 1px 1px 12px #000000;
   margin:150px;
   opacity: 1;
   margin-bottom: 300px;
@@ -67,65 +57,25 @@
   height: 60px;
 }
 
-
-.register-button:active , .login-button:active {
-  transform: translateY(5px);
-  box-shadow: 0px 0px 0px 0px #a29bfe;
+.register-button::before, .login-button::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgb(90, 3, 172);
+  transform: translateX(-101%);
+  transition: all .3s ease;
+  z-index: -1;
 }
 
-
-/*
-.register-button, .login-button {
-    text-decoration: none;
-    --glow-color: rgb(217, 176, 255);
-    --glow-spread-color: rgba(191, 123, 255, 0.781);
-    --enhanced-glow-color: rgb(231, 206, 255);
-    --btn-color: rgb(100, 61, 136);
-    border: .25em solid var(--glow-color);
-    padding: 1em 3em;
-    color: var(--glow-color);
-    font-size: 15px;
-    font-weight: bold;
-    background-color: var(--btn-color);
-    border-radius: 1em;
-    outline: none;
-    box-shadow: 0 0 1em .25em var(--glow-color),
-            0 0 4em 1em var(--glow-spread-color),
-            inset 0 0 .75em .25em var(--glow-color);
-    text-shadow: 0 0 .5em var(--glow-color);
-    position: relative;
-    transition: all 0.3s;
-    margin:100px;
+.register-button:hover, .login-button:hover {
+  text-decoration-color: #272727;
+  transition: all .3s ease;
 }
 
-.register-button::after, .login-button::after {
- pointer-events: none;
- content: "";
- position: absolute;
- top: 120%;
- left: 0;
- height: 100%;
- width: 100%;
- background-color: var(--glow-spread-color);
- filter: blur(2em);
- opacity: .7;
- transform: perspective(1.5em) rotateX(35deg) scale(1, .6);
+.register-button:hover::before, .login-button:hover::before {
+  transform: translateX(0);
 }
-
-.register-button:hover , .login-button:hover {
- color: var(--btn-color);
- background-color: var(--glow-color);
- box-shadow: 0 0 1em .25em var(--glow-color),
-        0 0 4em 2em var(--glow-spread-color),
-        inset 0 0 .75em .25em var(--glow-color);
- color: black;
-}
-
-.register-button:active , .login-button:active{
- box-shadow: 0 0 0.6em .25em var(--glow-color),
-        0 0 2.5em 2em var(--glow-spread-color),
-        inset 0 0 .5em .25em var(--glow-color);
-}*/
-
-
 </style>
