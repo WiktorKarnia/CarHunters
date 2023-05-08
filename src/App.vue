@@ -1,5 +1,4 @@
 <template>
-    <header-component class="border"></header-component>
     <navbar-component id="nav" :isloggedin="isLoggedIn"></navbar-component>
     <div id="body" class="text-center">
       <router-view></router-view>
@@ -31,16 +30,16 @@
   });
 </script>
   
-  <style>
+  <style soped>
   body {
     text-align: center;
-    background-color: #f5f5f5;
+    background-color: #e2e2e2;
   }
 
   header{
     width: 100%;
     position:fixed;
-    background-color: #f5f5f5;
+    background-color: #e2e2e2;
   }
   #body {
     padding-top: 12vh;
