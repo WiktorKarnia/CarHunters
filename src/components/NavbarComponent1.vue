@@ -19,6 +19,11 @@
       </ul>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item">
+          <router-link class="nav-link active" aria-current="page" to="/liked">Liked</router-link>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
           <p @click="handleSignOut">Sign Out</p>
         </li>
       </ul>

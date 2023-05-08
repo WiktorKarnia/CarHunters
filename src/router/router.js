@@ -4,38 +4,46 @@ import { getAuth, onAuthStateChanged } from "firebase/auth"
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    {
-        path: '/posts',
-        name: 'Posts',
-        component: () => import('../views/PostsView.vue'),
+      {
+          path: '/posts',
+          name: 'Posts',
+          component: () => import('../views/PostsView.vue'),
+          meta: {
+            requiresAuth: true,
+        },
+      },
+      {
+        path: '/add-post',
+        name: 'AddPost',
+        component: () => import('../views/AddPostView.vue'),
         meta: {
           requiresAuth: true,
       },
     },
     {
-      path: '/add-post',
-      name: 'AddPost',
-      component: () => import('../views/AddPostView.vue'),
+      path: '/admin',
+      name: 'Admin',
+      component: () => import('../views/AdminView.vue'),
       meta: {
         requiresAuth: true,
     },
-  },
-  {
-    path: '/admin',
-    name: 'Admin',
-    component: () => import('../views/AdminView.vue'),
-    meta: {
-      requiresAuth: true,
-  },
-  },
-  {
-    path: '/deleted',
-    name: 'Deleted',
-    component: () => import('../views/DeletedView.vue'),
-    meta: {
-      requiresAuth: true,
-  },
-  },
+    },
+    {
+      path: '/deleted',
+      name: 'Deleted',
+      component: () => import('../views/DeletedView.vue'),
+      meta: {
+        requiresAuth: true,
+    },
+    },
+    {
+      path: '/liked',
+      name: 'Liked',
+      component: () => import('../views/LikedView.vue'),
+      meta: {
+        requiresAuth: true,
+    },
+    },
     {
       path: '/account',
       name: 'Account',
