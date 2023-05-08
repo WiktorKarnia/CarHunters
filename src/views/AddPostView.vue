@@ -16,7 +16,7 @@
     
                     <div class="form-group">
                         <label class="form-label">Description</label>
-                        <input type="text" class="form-control" v-model="car.engine" placeholder="Wpisz rodzaj silnika">
+                        <input type="text" class="form-control" v-model="car.description" placeholder="Wpisz rodzaj silnika">
                     </div>
     
                     <div class="form-group">
@@ -59,8 +59,8 @@
                 <h5 class="modal-title" id="exampleModalLabel">Missing information!</h5>
             </div>
             <div class="modal-body">
-                <p>Your posts doesn't seem to be finished yet!</p>
-                <p>You have to add some information to the post.</p>  
+                <p>Your post doesn't seem to be finished yet!</p>
+                <p>You have to add some information to it.</p>  
             </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
                 if(selectedFile64 != ""){
                     await uploadString(refImg, selectedFile64, "data_url");
                 }else{
-                    $('#noIMGModal').modal('show')
+                    $('#emptyModal').modal('show')
                 }
 
                 let location = null;

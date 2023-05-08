@@ -12,7 +12,7 @@
         </div>
         <div v-else>
             <p>Creating your account...</p>
-        <div class="spinner"></div>
+        <div class="spinner-border text-primary" role="status"></div>
       </div>
     </div>
 </template>
@@ -120,17 +120,5 @@ const goBack = () => {
 </script>
 
 <style>
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 4px solid #ccc;
-      border-top-color: #333;
-      animation: spin 0.8s ease-in-out infinite;
-      margin: 10px auto;
-    }
-  
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
+
+</style>

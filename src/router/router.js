@@ -5,22 +5,6 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/home',
-      name: 'Home',
-      component: () => import('../views/HomeView.vue'),
-      meta: {
-        requiresAuth: true,
-    },
-    },
-    {
-      path: '/about',
-      name: 'About',
-      component: () => import('../views/AboutView.vue'),
-      meta: {
-        requiresAuth: true,
-    },
-    },
-    {
         path: '/posts',
         name: 'Posts',
         component: () => import('../views/PostsView.vue'),
@@ -110,7 +94,7 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     if (user) {
-      router.push('/home');
+      router.push('/posts');
     } else {
       next();
     }

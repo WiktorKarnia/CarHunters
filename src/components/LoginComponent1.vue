@@ -17,7 +17,7 @@
         </div>
         <div v-else>
             <p>Logging In...</p>
-            <div class="spinner"></div>
+            <div class="spinner-border text-primary" role="status"></div>
         </div>
     </div>
   </template>
@@ -45,7 +45,7 @@
         console.log("Successfully logged in!");
         console.log(auth.currentUser);
         console.log(auth.currentUser.displayName);
-        router.push('/home');
+        router.push('/posts');
       })
       .catch((error) => {
         console.log(error.code);
@@ -75,7 +75,7 @@
     signInWithPopup(getAuth(), provider)
       .then((result) => {
         console.log(result.user);
-        router.push('/home');
+        router.push('/posts');
       })
       .catch((error) => {
         console.log("Error");
@@ -92,18 +92,6 @@
   </script>
   
   <style>
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 4px solid #ccc;
-      border-top-color: #333;
-      animation: spin 1.8s ease-in-out infinite;
-      margin: 10px auto;
-    }
-  
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+
   </style>
   

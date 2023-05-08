@@ -13,32 +13,34 @@
 
           <div :id="'mapContainer'+car.id" style="height: 0px; width: 100%; visibility: hidden;"></div>
 
-          <img :id="'heart'+car.id" :src="car.liked ? './img/heart-filled.png' : './img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
-
-          <div>
-            <button @click="showMap(car.location, car.id)" style="float:right">Show Map</button>
+          
+          <div  class="mx-2 my-2">
+            <div>
+              <!-- <button @click="showMap(car.location, car.id)" style="float:right">Show Map</button> -->
+              <img :id="'showMap'+car.id" @click="showMap(car.location, car.id)" src='/img/pin.png' alt="Pin" width="30" height="30" style="float:right">
+            </div>
+            
+            <img :id="'heart'+car.id" :src="car.liked ? './img/heart-black.png' : './img/like.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
+            <p style="float:left">{{ car.likes }}</p>
+            <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
+            <p style="float:left">{{ car.comments }}</p>
+            <br><br>
           </div>
 
-          <p style="float:left">{{ car.likes }}</p>
-          <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
-          <p style="float:left">{{ car.comments }}</p>
-          <br><br>
-
-          <p>{{ car.username }}</p>
-          <p>{{ car.make }}</p>
-          <p>{{ car.model }}</p>
-          <p>{{ car.engine }}</p>
-          <p>{{ car.color }}</p>
-
+          <div class="mx-2 my-2">
+            <p class="font-weight-bold" style="float:left"> {{ car.username }}: {{ car.make }} {{ car.model }}</p>
+          </div><br>
+          <div class="mx-2 my-2">
+            <p style="float:left">{{ car.description }}</p>
+          </div><br><br>
           
+          <div>
+            <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="50" v-model="carComment[car.id]" placeholder="Write a comment...">
+            <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
+          </div>
 
-          
-
-          <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="150" v-model="carComment[car.id]" placeholder="Write a comment...">
-          <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
-
-          <div :id="'comments'+car.id" style="display:none;margin-top:20px">
-            <img src="/img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
+          <div :id="'comments'+car.id" class="text-wrap" style="display:none;margin-top:20px">
+            <!-- <img src="/img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right"> -->
             <div class="my-4" v-for="(comment, index) in comments" :key="index">
               <img v-if="comment.uid === comment.currentUID" src="/img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
               <p>{{ comment.username }}: {{ comment.comment }}</p>
@@ -54,7 +56,7 @@
     import { reactive, onMounted } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
-    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp, doc } from 'firebase/firestore';
+    import { getFirestore, query as dbQuery, where, collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp, doc, getDoc } from 'firebase/firestore';
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig";
     import { db } from '../main'; 
@@ -174,7 +176,12 @@
 
         const countLikes = async (post_id) => {
           const querySnapshot2 = await getDocs(dbQuery(collection(db, 'likes'), where('post_id', '==', post_id)))
-          return querySnapshot2.docs.length;
+          if (querySnapshot2.docs.length === 0) {
+            return ''
+          }else{
+            return querySnapshot2.docs.length;
+          }
+          
         }
 
         //Comments
@@ -246,7 +253,11 @@
 
         const countComments = async (post_id) => {
           const querySnapshot2 = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', post_id)))
-          return querySnapshot2.docs.length;
+          if (querySnapshot2.docs.length === 0) {
+            return '';
+          }else{
+            return querySnapshot2.docs.length;
+          }
         }
 
         const deleteComment = async (comment_id, post_id) => {
@@ -290,8 +301,7 @@
               username: doc.data().username,
               make: doc.data().make,
               model: doc.data().model,
-              engine: doc.data().engine,
-              color: doc.data().color,
+              description: doc.data().description,
               imageUrl: imageUrl,
               location: doc.data().location,
               liked: likeExists 
