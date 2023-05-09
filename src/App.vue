@@ -33,18 +33,26 @@
   <style soped>
   body {
     text-align: center;
-    background-color: #e2e2e2;
+    background-color: #f5f5f5;
   }
 
   header{
     width: 100%;
     position:fixed;
-    background-color: #e2e2e2;
+    background-color: #f5f5f5;
+    z-index: 9999;
   }
   #body {
+
     padding-top: 14vh;
     padding-bottom: 3vh;
   }
+  #nav{
+    z-index: 9999;
+    margin-top: 5.6vh;
+    width: 100%;
+    position:fixed;
+   }
 
 </style>
 

@@ -35,8 +35,8 @@
           </div><br><br>
           
           <div>
-            <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="50" v-model="carComment[car.id]" placeholder="Write a comment...">
-            <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
+            <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="50" v-model="carComment[car.id]" autocomplete="off" placeholder="Write a comment...">
+            <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;margin-bottom:5px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
           </div>
 
           <div :id="'comments'+car.id" class="text-wrap" style="display:none;margin-top:20px">
@@ -300,6 +300,7 @@
                 cars.push({
                     id: doc.id,
                     likes: likesCount,
+                    uid: doc.data().uid,
                     comments: commentsCount,
                     username: doc.data().username,
                     make: doc.data().make,

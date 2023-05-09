@@ -147,8 +147,7 @@
                         createdAt: serverTimestamp(),
                         make: capitalize(this.car.make),
                         model: capitalize(this.car.model),
-                        engine: capitalize(this.car.engine),
-                        color: capitalize(this.car.color),
+                        description: capitalize(this.car.description),
                         location: location,
                         path: "cars/" + id + ".jpg",
                     });

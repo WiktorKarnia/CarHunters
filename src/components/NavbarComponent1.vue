@@ -1,5 +1,5 @@
 <template>
-<nav class="border-bottom navbar navbar-expand-lg navbar-light" style="background-color: #f5f5f5" v-if="isloggedin">
+<nav class="border-bottom navbar navbar-expand-lg navbar-light" style="background-color: #f5f5f5;" v-if="isloggedin">
   <div class="container-fluid">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCenteredExample" aria-controls="navbarCenteredExample" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -36,7 +36,7 @@
       <ul class="navbar-nav ms-4 mb-2">
         <li class="nav-item">
           <router-link class="nav-link active" aria-current="page" to="/search">
-            <img src="img/pin.png" width="35" height="35" alt="">
+            <img src="img/search.png" width="35" height="35" alt="">
           </router-link>
         </li>
       </ul>
@@ -65,9 +65,11 @@
   const auth = getAuth();
 
   const handleSignOut = () => {
-    signOut(auth).then(() => {
-      console.log("Signed out")
-      router.push("/hello")
-    })
+    if (window.confirm("Are you sure you want to log out?")) {
+      signOut(auth).then(() => {
+        console.log("Signed out")
+        router.push("/hello")
+      })
+    }
   };
 </script> 

@@ -53,7 +53,7 @@
     </div>
     <hr style="height:3px;color:#1D1D1F;width:80%;margin: auto;">
     <div>
-      <!-- <profile-posts-component></profile-posts-component> -->
+      <profile-posts-component></profile-posts-component>
     </div>
   </template>
   
