@@ -17,6 +17,7 @@
               <div  class="mx-2 my-2">
                 <div>
                   <!-- <button @click="showMap(car.location, car.id)" style="float:right">Show Map</button> -->
+                  <img :id="'deletePost'+car.id" @click="deleteCar(car.id)" src='/img/delete.png' alt="Pin" width="30" height="30" style="float:right">
                   <img :id="'showMap'+car.id" @click="showMap(car.location, car.id)" src='/img/pin.png' alt="Pin" width="30" height="30" style="float:right">
                 </div>
                 
