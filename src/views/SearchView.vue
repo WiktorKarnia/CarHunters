@@ -44,8 +44,24 @@
               </div><br><br>
               
               <div>
-                <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="50" v-model="carComment[car.id]" autocomplete="off" placeholder="Write a comment...">
-                <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;margin-bottom:5px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
+                <!--
+                <input type="text" :id="'comment'+car.id" maxlength="50" v-model="carComment[car.id]" placeholder="Write a comment...">
+                <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
+                -->
+                <div class="comment-container">
+                  <div class="comment">
+                    <input id="commentInput" class="input" required="" type="text" :id="'comment'+car.id" maxlength="50" v-model="carComment[car.id]" autocomplete="off" placeholder="Write a comment...">
+                    <span class="input-border"></span>
+                  </div>
+                  <div>
+                    <button class="btn" style="color:black;" @click="commentPost(car.id, carComment[car.id])" type="button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                      <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                    </svg>
+                    </button>
+                  </div>
+                  <br>
+                </div>
               </div>
     
               <div :id="'comments'+car.id" class="text-wrap" style="display:none;margin-top:20px">
@@ -66,7 +82,7 @@
     import { reactive, onMounted } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
-    import { where, getFirestore, query as dbQuery,  collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp, doc } from 'firebase/firestore';    
+    import { where, getFirestore, query as dbQuery,  collection, addDoc, deleteDoc, getDoc, getDocs, orderBy, serverTimestamp, doc } from 'firebase/firestore';    
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig";
     import { db } from '../main';
@@ -473,5 +489,62 @@ input[type="submit"] {
     background-image: -webkit-gradient(linear, left top, left bottom, from(#38a2f7), to(#2498f7));
     background-image: -o-linear-gradient(#38a2f7, #2498f7);
     background-image: linear-gradient(#38a2f7, #2498f7);
+}
+
+.comment {
+  margin:10px;
+ --border-height: 1px;
+ --border-before-color: rgba(221, 221, 221, 0.39);
+ --border-after-color: #7843e6;
+ --input-hovered-color: #4985e01f;
+ position: relative;
+ width: var(--width-of-input);
+ flex-grow: 1;
+ margin: 10px;
+}
+/* styling of Input */
+.input {
+ color: black;
+ font-size: 0.9rem;
+ background-color: transparent;
+ width: 100%;
+ box-sizing: border-box;
+ padding-inline: 0.5em;
+ padding-block: 0.7em;
+ border: none;
+ border-bottom: var(--border-height) solid var(--border-before-color);
+}
+/* styling of animated border */
+.input-border {
+ position: absolute;
+ background: var(--border-after-color);
+ width: 0%;
+ height: 2px;
+ bottom: 0;
+ left: 0;
+ transition: 0.3s;
+}
+/* Hover on Input */
+#commentInput:hover {
+ background: var(--input-hovered-color);
+}
+
+#commentInput:focus {
+ outline: none;
+}
+/* here is code of animated border */
+#commentInput:focus ~ .input-border {
+ width: 100%;
+}
+/* === if you want to do animated border on typing === */
+/* remove input:focus code and uncomment below code */
+/* input:valid ~ .input-border{
+  width: 100%;
+} */
+
+.comment-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>

@@ -102,7 +102,7 @@
       countPosts(currentUser.uid)
       countLikes(currentUser.uid)
     }
-    const admin = (currentUser.uid === 'XECmcugKcdhxvEiruG1H7ARg9hu1') ? true : false;
+    const admin = (currentUser.uid === '3f5VKYhG1TclRPeFUNsJVnGlHhn1') ? true : false;
 
 
 </script>
