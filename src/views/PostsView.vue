@@ -243,7 +243,7 @@
 
         const closeComments = (post_id) => {
           const commentsDiv = document.getElementById('comments'+post_id);
-          if (commentsDiv.offsetParent !== null) {
+          if (commentsDiv && commentsDiv.offsetParent !== null) {
             comments.splice(0);
             console.log('closed comments')
             commentsDiv.style.display = "none";
@@ -268,7 +268,7 @@
           if (confirmationResult) {
             await deleteDoc(commentRef);
             comments.splice(cars.findIndex(comment => comment.id === comment_id), 1);
-            if (comments.length === 0) {
+            if (comments.length < 1) {
                 closeComments()
             }
             const commentCount = await countComments(post_id);
