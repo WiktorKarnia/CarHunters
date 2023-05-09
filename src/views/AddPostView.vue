@@ -35,7 +35,7 @@
     
                 <div class="col">
                     <div class="form-group mt-5">
-                        <img id="pictureFromCamera" style="width: 500px; height: 500px;"/>
+                        <img id="pictureFromCamera" style="width: 500px; height: 500px;object-fit: cover;"/>
                     </div>
     
                     <div class="form-group">
