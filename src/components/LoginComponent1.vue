@@ -1,26 +1,4 @@
 <template>
-  <!--
-    <div>
-        <div v-if="!loading">
-            <h1>Log into your account</h1>
-            <p><input type="text" placeholder="E-mail" v-model="email" /></p>
-            <p><input type="password" placeholder="Password" v-model="password" /></p>
-            <p v-if="errMsg">{{ errMsg }}</p>
-            <p>
-                <button @click="signIn" :disabled="loading">{{ loading ? 'Loading...' : 'Log In' }}</button>
-            </p>
-            <p>
-                <button @click="signInWithGoogle" :disabled="loading">{{ loading ? 'Loading...' : 'Sign in with Google' }}</button>
-            </p>
-            <p>
-              <button @click="goBack" :disabled="loading">{{ loading ? 'Loading...' : 'Back' }}</button>
-          </p>
-        </div>
-        <div v-else>
-            <p>Logging In...</p>
-            <div class="spinner-border text-primary" role="status"></div>
-        </div>
-    </div>-->
     <div>
       <div class="cont">
           <div v-if="!loading">
@@ -40,6 +18,7 @@
                     <a rel="noopener noreferrer" href="#">Forgot Password ?</a>
                   </div>
                 </div>
+                <p v-if="errMsg">{{ errMsg }}</p>
                 <button class="sign" @click="signIn" :disabled="loading">{{ loading ? 'Loading...' : 'Log In' }}</button>
               </form>
               <div class="social-message">
