@@ -15,45 +15,49 @@
             </div>
         </div>
         <ul v-else>
-        <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id), closeMap(car.id)">
-            <div :id="'imgContainer'+car.id" style="height: 500px; width: 100%; visibility: visible;">
+          <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id), closeMap(car.id)">
+              <div :id="'imgContainer'+car.id" style="height: 500px; width: 100%; visibility: visible;">
                 <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)" style="object-fit: cover;"><br>
-            </div>
-
-            <div :id="'mapContainer'+car.id" style="height: 0px; width: 100%; visibility: hidden;"></div>
-
-            <img :id="'heart'+car.id" :src="car.liked ? './img/heart-filled.png' : './img/heart-empty.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id)" style="float:left">
-
-            <p style="float:left">{{ car.likes }}</p>
-            <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
-            <p style="float:left">{{ car.comments }}</p>
-            <br><br>
-
-            <p>{{ car.username }}</p>
-            <p>{{ car.make }}</p>
-            <p>{{ car.model }}</p>
-            <p>{{ car.engine }}</p>
-            <p>{{ car.color }}</p>
-
-            <div>
-                <button @click="showMap(car.location, car.id)">Show Map</button>
-            </div>
-
-            
-
-            <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="150" v-model="carComment[car.id]" placeholder="Write a comment...">
-            <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
-
-            <div :id="'comments'+car.id" style="display:none;margin-top:20px">
-                <img src="/img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
-                <div class="my-4" v-for="(comment, index) in comments" :key="index">
-                <img v-if="comment.uid === comment.currentUID" src="/img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
-                <p>{{ comment.username }}: {{ comment.comment }}</p>
+              </div>
+    
+              <div :id="'mapContainer'+car.id" style="height: 0px; width: 100%; visibility: hidden;"></div>
+    
+              
+              <div  class="mx-2 my-2">
+                <div>
+                  <!-- <button @click="showMap(car.location, car.id)" style="float:right">Show Map</button> -->
+                  <img :id="'showMap'+car.id" @click="showMap(car.location, car.id)" src='/img/pin.png' alt="Pin" width="30" height="30" style="float:right">
                 </div>
-            </div>
-
-        </li>
-        </ul>
+                
+                <img :id="'heart'+car.id" :src="car.liked ? './img/heart-black.png' : './img/like.png'" alt="Heart button" width="30" height="30" @click="toggleLikePost(car.id, car.uid)" style="float:left">
+                <p style="float:left">{{ car.likes }}</p>
+                <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
+                <p style="float:left">{{ car.comments }}</p>
+                <br><br>
+              </div>
+    
+              <div class="mx-2 my-2">
+                <p class="font-weight-bold" style="float:left"> {{ car.username }}: {{ car.make }} {{ car.model }}</p>
+              </div><br>
+              <div class="mx-2 my-2">
+                <p style="float:left">{{ car.description }}</p>
+              </div><br><br>
+              
+              <div>
+                <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="50" v-model="carComment[car.id]" autocomplete="off" placeholder="Write a comment...">
+                <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;margin-bottom:5px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
+              </div>
+    
+              <div :id="'comments'+car.id" class="text-wrap" style="display:none;margin-top:20px">
+                <!-- <img src="/img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right"> -->
+                <div class="my-4" v-for="(comment, index) in comments" :key="index">
+                  <img v-if="comment.uid === comment.currentUID" src="/img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
+                  <p>{{ comment.username }}: {{ comment.comment }}</p>
+                </div>
+              </div>
+    
+          </li>
+          </ul>
         <p v-if="!isLoading.value && cars.length === 0">0 resulsts</p>
     </div>
 </template>
@@ -313,8 +317,7 @@
                     comments: commentsCount,
                     username: doc.data().username,
                     make: doc.data().make,
-                    model: doc.data().model,
-                    engine: doc.data().engine,
+                    description: doc.data().description,
                     color: doc.data().color,
                     imageUrl: imageUrl,
                     location: doc.data().location,
@@ -342,7 +345,6 @@
           showMap,
           map,
           onSubmit,
-          isLoading
         };
       }   
     }
@@ -373,16 +375,14 @@ h1 {
   margin-bottom: 20px;
 }
 body .bbbootstrap {
-    background-image: url(https://res.cloudinary.com/dxfq3iotg/image/upload/v1566917764/Add_a_heading.png) !important;
     background-size: cover;
-    padding: 180px 0 30px 0;
+    background-image: url(img/P1.jpg) !important;
 }
 .bbbootstrap {
     padding: 40px;
     margin-bottom: 22px;
     color: #fff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-    background-color: #8c2ef7;
     -webkit-box-shadow: 0 15px 15px -15px rgba(0, 0, 0, 0.25) inset, 0 -15px 15px -15px rgba(0, 0, 0, 0.25) inset;
     box-shadow: 0 15px 15px -15px rgba(0, 0, 0, 0.25) inset, 0 -15px 15px -15px rgba(0, 0, 0, 0.25) inset;
 }

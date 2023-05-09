@@ -1,43 +1,72 @@
 <template>
-    <div class="container px-5 mx-5">
+    <div class="my-2 mx-5 py-2 px-5">
         <form id="form" @submit.prevent="submitForm">
-            <div class="form-group">
-                <label class="form-label">Marka</label>
-                <input type="text" class="form-control" v-model="car.make" placeholder="Wpisz markę samochodu">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Model</label>
-                <input type="text" class="form-control" v-model="car.model" placeholder="Wpisz model samochodu">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Silnik</label>
-                <input type="text" class="form-control" v-model="car.engine" placeholder="Wpisz rodzaj silnika">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Kolor</label>
-                <input type="text" class="form-control" v-model="car.color" placeholder="Wpisz kolor samochodu">
-            </div>
-            <div class="form-group">
-                <label class="form-label">You want us to use your current location?</label>
-                <label class="switch">
-                    <input type="checkbox" v-model="isLocationChecked" @click="checkedBox()">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div id="locationDiv" class="form-group" style="display: none">
-                <label class="form-label">Location</label>
-                <input type="text" class="form-control" ref="origin" placeholder="Wpisz gdzie zrobiłeś zdjęcie">
-            </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            <div class="form-group">
-                <label for="cameraFileInput" class="btn btn-primary">Wybierz zdjęcie</label>
-                <input @change="openCamera" style="display:none" id="cameraFileInput" type="file" accept="image/*" capture="environment">
-            </div>
-            <div class="form-group">
-                <img id="pictureFromCamera" class="img-fluid"/>
+            <div class="row">
+                <div class="col align-self-center">
+    
+                    <div class="form-group">
+                        <label class="form-label">Make</label>
+                        <input type="text" class="form-control" v-model="car.make" placeholder="Make of the spotted car">
+                    </div>
+    
+                    <div class="form-group">
+                        <label class="form-label">Model</label>
+                        <input type="text" class="form-control" v-model="car.model" placeholder="Model of the spotted car">
+                    </div>
+    
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-control" v-model="car.description" placeholder="Description of your spot">
+                    </div>
+    
+                    <div class="form-group">
+                        <label class="form-label">You want us to use your current location?</label>
+                        <label class="switch">
+                            <input type="checkbox" v-model="isLocationChecked" @click="checkedBox()">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+    
+                    <div id="locationDiv" class="form-group" style="display: none">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" ref="origin" placeholder="Where did you take the picture?">
+                    </div>
+                </div>
+    
+                <div class="col">
+                    <div class="form-group mt-5">
+                        <img id="pictureFromCamera" style="width: 500px; height: 500px;"/>
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="cameraFileInput" class="btn btn-primary">Pick a photo</label>
+                        <input @change="openCamera" style="display:none" id="cameraFileInput" type="file" accept="image/*" capture="environment">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col align-self-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
+    
+    <div class="modal fade" id="emptyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Missing information!</h5>
+            </div>
+            <div class="modal-body">
+                <p>Your post doesn't seem to be finished yet!</p>
+                <p>You have to add some information to it.</p>  
+            </div>
+            </div>
+        </div>
+        </div>
+    
 </template>
   
 <script>
@@ -60,8 +89,7 @@
                 car: {
                     make: "",
                     model: "",
-                    engine: "",
-                    color: "",
+                    description: "",
                 },
                 isLocationChecked: false,
                 autocomplete: "",
@@ -89,7 +117,11 @@
                 const uid = user.uid;
                 const username = user.displayName;
 
-                await uploadString(refImg, selectedFile64, "data_url");
+                if(selectedFile64 != ""){
+                    await uploadString(refImg, selectedFile64, "data_url");
+                }else{
+                    $('#emptyModal').modal('show')
+                }
 
                 let location = null;
                 if (!this.isLocationChecked) {
@@ -106,29 +138,30 @@
                 function capitalize(str) {
                     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
                 }
+                if (this.car.make === "" || this.car.model === "" || this.car.description === "") {
+                    $('#emptyModal').modal('show')
+                }else{
+                    await setDoc(doc(db, "cars", id), {
+                        uid: uid,
+                        username: username,
+                        createdAt: serverTimestamp(),
+                        make: capitalize(this.car.make),
+                        model: capitalize(this.car.model),
+                        description: capitalize(this.car.description),
+                        location: location,
+                        path: "cars/" + id + ".jpg",
+                    });
 
-                await setDoc(doc(db, "cars", id), {
-                    uid: uid,
-                    username: username,
-                    createdAt: serverTimestamp(),
-                    make: capitalize(this.car.make),
-                    model: capitalize(this.car.model),
-                    engine: capitalize(this.car.engine),
-                    color: capitalize(this.car.color),
-                    location: location,
-                    path: "cars/" + id + ".jpg",
-                });
+                    console.log("The photo has been sent in path cars/" + id);
 
-                console.log("The photo has been sent in path cars/" + id);
-
-                this.car.username = "";
-                this.car.make = "";
-                this.car.model = "";
-                this.car.engine = "";
-                this.car.color = "";
-                this.car.location = "";
-                document.getElementById("pictureFromCamera").src = "";
-                router.push("/posts");
+                    this.car.username = "";
+                    this.car.make = "";
+                    this.car.model = "";
+                    this.car.description = "";
+                    this.car.location = "";
+                    document.getElementById("pictureFromCamera").src = "";
+                    router.push("/posts");
+                }
             },
             openCamera(event) {
                 const file = event.target.files[0];
@@ -156,7 +189,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .switch {
         position: relative;
         display: inline-block;

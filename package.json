@@ -9,6 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tensorflow-models/coco-ssd": "^2.2.2",
+    "@tensorflow/tfjs": "^4.5.0",
+    "@tensorflow/tfjs-backend-cpu": "^4.5.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.5.0",
     "dotenv": "^16.0.3",
     "firebase": "^9.20.0",
     "leaflet": "^1.9.3",

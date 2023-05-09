@@ -4,21 +4,45 @@ import { getAuth, onAuthStateChanged } from "firebase/auth"
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+      {
+          path: '/posts',
+          name: 'Posts',
+          component: () => import('../views/PostsView.vue'),
+          meta: {
+            requiresAuth: true,
+        },
+      },
+      {
+        path: '/add-post',
+        name: 'AddPost',
+        component: () => import('../views/AddPostView.vue'),
+        meta: {
+          requiresAuth: true,
+      },
+    },
     {
-      path: '/home',
-      name: 'Home',
-      component: () => import('../views/HomeView.vue'),
+      path: '/admin',
+      name: 'Admin',
+      component: () => import('../views/AdminView.vue'),
       meta: {
         requiresAuth: true,
     },
     },
     {
-      path: '/about',
-      name: 'About',
-      component: () => import('../views/AboutView.vue'),
+      path: '/deleted',
+      name: 'Deleted',
+      component: () => import('../views/DeletedView.vue'),
       meta: {
         requiresAuth: true,
     },
+    },
+    {
+      path: '/liked',
+      name: 'Liked',
+      component: () => import('../views/LikedView.vue'),
+      meta: {
+        requiresAuth: true,
+    }
     },
     {
       path: '/search',
@@ -29,37 +53,13 @@ const router = createRouter({
     },
     },
     {
-        path: '/posts',
-        name: 'Posts',
-        component: () => import('../views/PostsView.vue'),
-        meta: {
-          requiresAuth: true,
-      },
-    },
-    {
       path: '/add-post',
       name: 'AddPost',
       component: () => import('../views/AddPostView.vue'),
       meta: {
         requiresAuth: true,
     },
-  },
-  {
-    path: '/admin',
-    name: 'Admin',
-    component: () => import('../views/AdminView.vue'),
-    meta: {
-      requiresAuth: true,
-  },
-  },
-  {
-    path: '/deleted',
-    name: 'Deleted',
-    component: () => import('../views/DeletedView.vue'),
-    meta: {
-      requiresAuth: true,
-  },
-  },
+    },
     {
       path: '/account',
       name: 'Account',
@@ -118,7 +118,7 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     if (user) {
-      router.push('/home');
+      router.push('/posts');
     } else {
       next();
     }

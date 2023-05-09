@@ -1,32 +1,54 @@
 <template>
     <div>
-        <ul>
-        <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id)">
-            <img :src="car.imageUrl" width="500" height="500"><br>
-            <img :id="'heart'+car.id" :src="'img/heart-filled.png'" alt="Heart button" width="30" height="30" style="float:left">
-            <p style="float:left">{{ car.likes }}</p>
-            <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='img/comment.png' alt="Comments" width="30" height="30" style="float:left">
-            <p style="float:left">{{ car.comments }}</p>
-            <br><br>
-
-            <p>{{ car.username }}</p>
-            <p>{{ car.make }}</p>
-            <p>{{ car.model }}</p>
-            <p>{{ car.engine }}</p>
-            <p>{{ car.color }}</p>
-  
-            <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" v-model="carComment[car.id]" placeholder="Write a comment...">
-            <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;" @click="commentPost(car.id, carComment[car.id])" maxlength="150" type="button">Comment</button><br>
-            
-            <div :id="'comments'+car.id" style="display:none;margin-top:20px">
-              <img src="img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right">
-              <div class="my-4" v-for="(comment, index) in comments" :key="index" >
-                <p>{{ comment.username }}: {{ comment.comment }}</p>
-              </div> 
-            </div>
-  
-        </li>
-        </ul>
+        <div v-if="isLoading.value" class="d-flex justify-content-center my-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <ul v-else>
+          <li v-for="car in cars" :key="car.id" @mouseleave="closeComments(car.id), closeMap(car.id)">
+              <div :id="'imgContainer'+car.id" style="height: 500px; width: 100%; visibility: visible;">
+                <img :src="car.imageUrl" width="500" height="500" @dblclick="toggleLikePost(car.id)" style="object-fit: cover;"><br>
+              </div>
+    
+              <div :id="'mapContainer'+car.id" style="height: 0px; width: 100%; visibility: hidden;"></div>
+    
+              
+              <div  class="mx-2 my-2">
+                <div>
+                  <!-- <button @click="showMap(car.location, car.id)" style="float:right">Show Map</button> -->
+                  <img :id="'showMap'+car.id" @click="showMap(car.location, car.id)" src='/img/pin.png' alt="Pin" width="30" height="30" style="float:right">
+                </div>
+                
+                <img :id="'heart'+car.id" src="/img/heart-black.png" alt="Heart button" width="30" height="30" style="float:left">
+                <p style="float:left">{{ car.likes }}</p>
+                <img :id="'showComments'+car.id" @click="fetchComments(car.id)" src='/img/comment.png' alt="Comments" width="30" height="30" style="float:left">
+                <p style="float:left">{{ car.comments }}</p>
+                <br><br>
+              </div>
+    
+              <div class="mx-2 my-2">
+                <p class="font-weight-bold" style="float:left"> {{ car.username }}: {{ car.make }} {{ car.model }}</p>
+              </div><br>
+              <div class="mx-2 my-2">
+                <p style="float:left">{{ car.description }}</p>
+              </div><br><br>
+              
+              <div>
+                <input style="height:50px;width:60%; margin:10px;border-radius:5px;padding:5px;" type="text" :id="'comment'+car.id" maxlength="50" v-model="carComment[car.id]" autocomplete="off" placeholder="Write a comment...">
+                <button class="btn" style="background-color:#7EA3F1;color:black;height:50px;width:150px;margin-bottom:5px;" @click="commentPost(car.id, carComment[car.id])" type="button">Comment</button><br>
+              </div>
+    
+              <div :id="'comments'+car.id" class="text-wrap" style="display:none;margin-top:20px">
+                <!-- <img src="/img/delete.png" alt="X button" width="50" height="50" @click="closeComments(car.id)" style="float:right"> -->
+                <div class="my-4" v-for="(comment, index) in comments" :key="index">
+                  <img v-if="comment.uid === comment.currentUID" src="/img/delete.png" alt="X button" width="20" height="20" @click="deleteComment(comment.id, comment.post_id)" style="float:left">
+                  <p>{{ comment.username }}: {{ comment.comment }}</p>
+                </div>
+              </div>
+    
+          </li>
+          </ul>
     </div>
 </template>
 
@@ -34,7 +56,7 @@
     import { reactive } from 'vue';
     import { initializeApp } from "firebase/app";
     import { getAuth } from 'firebase/auth';
-    import { where, getFirestore, query as dbQuery,  collection, addDoc, deleteDoc, getDocs, orderBy, serverTimestamp } from 'firebase/firestore';    
+    import { where, getFirestore, query as dbQuery, doc, collection, addDoc, deleteDoc, getDocs, getDoc, orderBy, serverTimestamp } from 'firebase/firestore';    
     import { getStorage, ref, getDownloadURL } from 'firebase/storage';
     import firebaseConfig from "../firebaseConfig";
     import { db } from '../main'; 
@@ -47,6 +69,44 @@
         const comments = reactive([]);
         const auth = getAuth()
         const uid = auth.currentUser.uid
+        const isLoading = reactive({ value: true });
+        let map = null;
+
+        const showMap = (location, post_id) => {
+          const lat = location.latitude;
+          const long = location.longitude;
+          console.log(lat, long);
+          console.log(post_id);
+
+          const mapDiv = document.getElementById('mapContainer'+post_id)
+          const imgDiv = document.getElementById('imgContainer'+post_id)
+          mapDiv.style.height = '500px';
+          mapDiv.style.visibility = 'visible';
+          imgDiv.style.visibility = 'hidden';
+          imgDiv.style.height = '0px';
+
+          map = L.map("mapContainer"+post_id).setView([lat, long], 17);
+          L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(map);
+          L.marker([lat, long]).addTo(map);
+          // document.getElementById('mapContainer'+post_id).style.display = 'block';
+
+        }
+
+        const closeMap = (post_id) => {
+          const mapDiv = document.getElementById('mapContainer'+post_id)
+          const imgDiv = document.getElementById('imgContainer'+post_id) 
+          if (mapDiv.offsetWidth > 0 && mapDiv.offsetHeight > 0) {
+            if (map) {
+              map.remove();
+              map = null;
+            }
+            console.log('Map closed');
+            mapDiv.style.height = '0px';
+            mapDiv.style.visibility = 'hidden';
+            imgDiv.style.visibility = 'visible';
+            imgDiv.style.height = '500px';
+          }
+        }
 
         const commentPost = (post_id, commentContent) => {
           if (commentContent.trim() !== "") {
@@ -106,18 +166,76 @@
             }
 
         const countLikes = async (post_id) => {
-            const querySnapshot2 = await getDocs(dbQuery(collection(db, 'likes'), where('post_id', '==', post_id)))
+          const querySnapshot2 = await getDocs(dbQuery(collection(db, 'likes'), where('post_id', '==', post_id)))
+          if (querySnapshot2.docs.length === 0) {
+            return ''
+          }else{
             return querySnapshot2.docs.length;
+          }
         }
 
         const countComments = async (post_id) => {
-        const querySnapshot2 = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', post_id)))
-        return querySnapshot2.docs.length;
+          const querySnapshot2 = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', post_id)))
+          if (querySnapshot2.docs.length === 0) {
+            return '';
+          }else{
+            return querySnapshot2.docs.length;
+          }
         }
+        
+        const deleteComment = async (comment_id, post_id) => {
+          const commentRef = doc(db, 'comments', comment_id);
+          const getComment = await getDoc(commentRef);
+          const commentContent = getComment.data().comment;
+          const confirmationResult = confirm('Are you sure you want to delete this comment: ' + commentContent);
+          if (confirmationResult) {
+            await deleteDoc(commentRef);
+            comments.splice(cars.findIndex(comment => comment.id === comment_id), 1);
+            if (comments.length === 0) {
+                closeComments()
+            }
+            const commentCount = await countComments(post_id);
+            const car = cars.find((car) => car.id === post_id);
+            car.comments = commentCount;
+            console.log("Deleted the comment with id: " + comment_id);
+          } else {
+            console.log("Canceled");
+          }
+        }
+
+
+        const deleteCar = async (carId) => {
+          if (window.confirm("Are you sure you want to delete this post?")) {
+            const storage = getStorage();
+            const carRef = doc(db, "cars", carId);
+            const carSnapshot = await getDoc(carRef);
+            const carData = carSnapshot.data();
+
+            const comsSnapshot = await getDocs(dbQuery(collection(db, 'comments'), where('post_id', '==', carId)));
+            for (const doc1 of comsSnapshot.docs) {
+              await deleteDoc(doc1)
+            }
+            
+            const likesSnapshot = await getDocs(dbQuery(collection(db, 'likes'), where('post_id', '==', carId)));
+            for (const doc2 of likesSnapshot.docs) {
+              await deleteDoc(doc2)
+            }
+
+            //await deleteObject(ref(storage, `cars/${carId}.jpg`));
+            await deleteDoc(carRef);
+
+            const index = cars.findIndex(car => car.id === carId);
+            if (index !== -1) {
+              cars.splice(index, 1);
+            }
+          }
+        }
+
 
 
         getDocs(dbQuery(collection(db, 'cars'), orderBy('createdAt', 'desc'), where('uid', '==', uid)))
           .then(async (querySnapshot2) => {
+            isLoading.value = true;
             for (const doc of querySnapshot2.docs) {
                 const storage = getStorage();
                 const refImage = ref(storage, 'cars/' + doc.id + '.jpg');
@@ -126,26 +244,34 @@
                 const commentsCount = await countComments(doc.id);
 
                 cars.push({
-                  id: doc.id,
-                  username: doc.data().username,
-                  make: doc.data().make,
-                  model: doc.data().model,
-                  engine: doc.data().engine,
-                  color: doc.data().color,
-                  imageUrl: imageUrl,
-                  likes: likesCount,
-                  comments: commentsCount
+                    id: doc.id,
+                    likes: likesCount,
+                    uid: doc.data().uid,
+                    comments: commentsCount,
+                    username: doc.data().username,
+                    make: doc.data().make,
+                    model: doc.data().model,
+                    description: doc.data().description,
+                    imageUrl: imageUrl,
+                    location: doc.data().location,
                 });
             }
+            isLoading.value = false;
         });
       
         return {
           cars,
+          deleteCar,
           commentPost,
           closeComments,
           fetchComments,
           carComment,
-          comments
+          isLoading,
+          comments,
+          deleteComment,
+          closeMap,
+          showMap,
+          map
         };
       }   
     }
