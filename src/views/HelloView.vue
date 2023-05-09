@@ -28,7 +28,7 @@
     opacity: 0.8;
 }
 .title{
-    color: #4b1a83;
+    color: #7843e6;
     margin: 100;
     font-weight: bolder;
 }
@@ -64,7 +64,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-color: rgb(90, 3, 172);
+  background-color: #7843e6;
   transform: translateX(-101%);
   transition: all .3s ease;
   z-index: -1;
