@@ -39,14 +39,14 @@
                     </div>
     
                     <div class="form-group">
-                        <label for="cameraFileInput" class="btn btn-primary">Pick a photo</label>
+                        <label for="cameraFileInput" class="pick-button btn btn-primary">Pick a photo</label>
                         <input @change="openCamera" style="display:none" id="cameraFileInput" type="file" accept="image/*" capture="environment">
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col align-self-center">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="submit-button btn btn-primary">Submit</button>
                     </div>
                 </div>
             </div>
@@ -319,4 +319,50 @@
     width: auto;
   }
 }
+.submit-button, .pick-button{
+    display: inline-block;
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #fff;
+    margin: 1rem auto;
+    padding: 0.7rem 2rem;
+    border-style: none;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background-color: black;
+    box-shadow: 1px 1px 12px #000000;
+    opacity: 1;
+    width: 150px;
+    height: 60px;
+  }
+  .pick-button{
+    width: 225px;
+  }
+  
+  .submit-button::before, .pick-button::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #7843e6;
+    transform: translateX(-101%);
+    transition: all .3s ease;
+    z-index: -1;
+  }
+  
+  .submit-button:hover, .pick-button:hover {
+    text-decoration-color: #272727;
+    transition: all .3s ease;
+  }
+  
+  .submit-button:hover::before, .pick-button:hover::before {
+    transform: translateX(0);
+  }
 </style>
