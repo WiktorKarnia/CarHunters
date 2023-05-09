@@ -129,7 +129,7 @@
                         navigator.geolocation.getCurrentPosition(resolve, reject);
                     });
                     //location = new GeoPoint(position.coords.latitude, position.coords.longitude);
-                    location = new GeoPoint(position.coords.latitude + 2, position.coords.longitude + 2);
+                    location = new GeoPoint(position.coords.latitude, position.coords.longitude);
                 } else {
                     //location = new GeoPoint(this.car.location.latitude, this.car.location.longitude);
                     location = new GeoPoint(this.latInput, this.longInput);
