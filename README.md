@@ -23,28 +23,24 @@ A prototype of the application is available on Figma: [**CarHunters**](https://w
    ```bash
    git clone https://github.com/WiktorKarnia/CarHunters.git
    ```
-
 
 2. **Navigate to the Project Directory**:
 
    ```bash
    cd CarHunters
    ```
-
 
 3. **Install Dependencies**:
 
    ```bash
    npm install
    ```
-
 
 4. **Start the Development Server**:
 
    ```bash
    npm run dev
    ```
-
 
 The application should now be accessible at `http://localhost:3000`.
 
